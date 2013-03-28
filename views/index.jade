@@ -1,0 +1,10 @@
+extends layout
+
+block content
+  #editor
+  	
+  script
+    var editor = ace.edit("editor");
+    editor.getSession().setUseWorker(false);
+    editor.setTheme("ace/theme/monokai");
+    editor.getSession().setMode("ace/mode/javascript");
