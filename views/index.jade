@@ -2,9 +2,22 @@ extends layout
 
 block content
   #editor
-  	
+  #chat
+    #messages
+    br
+    #messagebox
   script
     var editor = ace.edit("editor");
     editor.getSession().setUseWorker(false);
     editor.setTheme("ace/theme/monokai");
     editor.getSession().setMode("ace/mode/javascript");
+
+    var socket = io.connect('http://collabit-4169.use1.actionbox.io:3000/');
+
+    socket.on('connect', function() {
+      socket.emit('adduser', prompt('What is your name?'));
+    });
+
+    socket.on('updatechat', function(username, data) {
+      
+    });

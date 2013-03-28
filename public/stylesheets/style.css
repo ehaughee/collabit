@@ -8,9 +8,37 @@ a {
 }
 
 #editor { 
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
+  position: absolute;
+  top: 0;
+/*  right: 0; */
+  bottom: 0;
+  left: 0;
+  width: 70%;
+}
+
+#chat {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  
+  width: 30%;
+}
+
+#chat #messages {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 90%;
+  width: 100%;
+  border: red solid 1px;
+}
+
+#chat #messagebox {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 10%;
+  width: 100%;
+  border: black solid 1px;
 }
