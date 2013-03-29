@@ -32,7 +32,7 @@ a {
   height: 90%;
   width: 100%;
   overflow: scroll;
-  border: red solid 1px;
+  border: black solid 2px;
 }
 
 #chat #messagebox {
