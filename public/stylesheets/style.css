@@ -36,9 +36,9 @@ a {
 
 #chat #messagebox {
   position: absolute;
-  top: 0;
+  bottom: 0;
   right: 0;
-  height: 10%;
+  height: 9%;
   width: 100%;
   border: black solid 1px;
 }
