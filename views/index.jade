@@ -4,8 +4,8 @@ block content
   #editor
   #chat
     #messages
-    br
     #messagebox
+      textarea#message
   script
     var editor = ace.edit("editor");
     editor.getSession().setUseWorker(false);
@@ -19,5 +19,21 @@ block content
     });
 
     socket.on('updatechat', function(username, data) {
-      
+      $('#messages').append('<b>'+username + ':</b> ' + data + '<br>');
+      var elem = document.getElementById('messages');
+      elem.scrollTop = elem.scrollHeight;
+    });
+    
+    $(function(){
+      var messageBox = $('textarea#message')
+      messageBox.keypress(function(e) {
+        if(e.which == 13) {
+          var message = messageBox.val();
+          if (message !== "") {
+            messageBox.val('');
+            socket.emit('sendchat', message);
+          }
+          return false;
+        }
+      });
     });
