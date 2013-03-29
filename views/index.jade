@@ -7,33 +7,59 @@ block content
     #messagebox
       textarea#message
   script
+    // ACE Editor code
+    // ===============
     var editor = ace.edit("editor");
     editor.getSession().setUseWorker(false);
     editor.setTheme("ace/theme/monokai");
     editor.getSession().setMode("ace/mode/javascript");
 
+    // Socket.IO code
+    // ==============
     var socket = io.connect('http://collabit-4169.use1.actionbox.io:3000/');
-
+    
     socket.on('connect', function() {
+      console.log('SOCKET: Connection detected.  Emitting \'adduser\'');
       socket.emit('adduser', prompt('What is your name?'));
     });
 
     socket.on('updatechat', function(username, data) {
+      console.log('SOCKET: \'updatechat\' emission detected.');
       $('#messages').append('<b>'+username + ':</b> ' + data + '<br>');
       var elem = document.getElementById('messages');
       elem.scrollTop = elem.scrollHeight;
     });
     
+    socket.on('updateeditor', function(code) {
+      console.log('SOCKET: \'updateeditor\' emission detected.');
+      // TODO: Uncommenting the below line causes an infite loop of updateeditor calls
+      // editor.setValue(code);
+    });
+
+    // Event handlers
+    // ==============
     $(function(){
-      var messageBox = $('textarea#message')
-      messageBox.keypress(function(e) {
+      $('textarea#message').keypress(function(e) {
         if(e.which == 13) {
-          var message = messageBox.val();
-          if (message !== "") {
-            messageBox.val('');
-            socket.emit('sendchat', message);
-          }
+          send_chat();
           return false;
         }
       });
+      
+      editor.on('change', send_code);
     });
+
+    function send_chat() {
+      var messageBox = $('textarea#message')
+      var message = messageBox.val();
+      if (message !== "") {
+        messageBox.val('');
+        console.log('SOCKET: Send chat command detected.  Emitting \'sendchat\'');
+        socket.emit('sendchat', message);
+      }
+    }
+
+    function send_code() {
+      console.log('SOCKET: Editor change detected.  Emitting \'sendcode\'');
+      socket.emit('sendcode', editor.getValue());
+    }

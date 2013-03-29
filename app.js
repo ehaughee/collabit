@@ -42,8 +42,8 @@ var io = require('socket.io').listen(server);
 var usernames = {};
 io.sockets.on('connection', function (socket) {
 
-  socket.on('sendcode', function(data) {
-    io.sockets.emit('updatecode', socket.username, data);
+  socket.on('sendcode', function(code) {
+    io.sockets.emit('updateeditor', code);
   });
   
   socket.on('sendchat', function (data) {
