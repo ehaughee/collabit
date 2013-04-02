@@ -3,13 +3,9 @@ body {
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
-a {
-  color: #00B7FF;
-}
-
 #editor { 
   position: absolute;
-  top: 44px;
+  top: 41px;
 /*  right: 0; */
   bottom: 0;
   left: 0;
@@ -18,7 +14,7 @@ a {
 
 #chat {
   position: absolute;
-  top: 44px;
+  top: 41px;
   right: 0;
   bottom: 0;
   
