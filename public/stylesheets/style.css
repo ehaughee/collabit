@@ -5,7 +5,7 @@ body {
 
 #editor { 
   position: absolute;
-  top: 41px;
+  top: 40px;
 /*  right: 0; */
   bottom: 0;
   left: 0;
@@ -14,7 +14,7 @@ body {
 
 #chat {
   position: absolute;
-  top: 41px;
+  top: 40px;
   right: 0;
   bottom: 0;
   
@@ -48,6 +48,12 @@ body {
   height: 100%;
 }
 
-.navbar a.brand {
-    text-decoration: none;
+#header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 40px;
+  background-color: black;
+  color: white;
 }
