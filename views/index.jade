@@ -20,13 +20,23 @@ block content
     
     socket.on('connect', function() {
       console.log('SOCKET: Connection detected.  Emitting \'adduser\'');
-      var name = "";
-      while (!name) {
-        name = prompt('What is your name?');
+      var name = get_username();
+      if (name !== false) {
+        socket.emit('adduser', name);
       }
-      socket.emit('adduser', name);
-      $('textarea#message').removeAttr('disabled');
     });
+
+    function get_username() {
+      name = prompt('What is your name?');
+      if (name !== "") {
+        $('textarea#message').removeAttr('disabled');
+        return name;
+      }
+      else {
+        return false;
+      }
+
+    }
 
     socket.on('updatechat', function(username, data) {
       console.log('SOCKET: \'updatechat\' emission detected.');

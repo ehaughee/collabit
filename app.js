@@ -4,6 +4,7 @@
  */
 
 var express = require('express')
+  // , sharejs = require('share').server
   , routes = require('./routes')
   , user = require('./routes/user')
   , http = require('http')
@@ -35,6 +36,13 @@ var server = http.createServer(app).listen(app.get('port'), function(){
 });
 
 /**
+ * ShareJS Code
+ */
+
+// var options = {db: {type: 'none'}};
+// sharejs.attach(server, options);
+
+/**
  * Socket.IO Code
  */
 var io = require('socket.io').listen(server);
@@ -45,7 +53,7 @@ io.sockets.on('connection', function (socket) {
   socket.on('sendcode', function(code) {
     io.sockets.emit('updateeditor', code);
   });
-  
+
   socket.on('sendchat', function (data) {
 		io.sockets.emit('updatechat', socket.username, data);
 	});
