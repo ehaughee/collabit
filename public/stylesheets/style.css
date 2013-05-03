@@ -57,3 +57,7 @@ body {
   background-color: black;
   color: white;
 }
+
+#header #btn_login {
+  float: right;
+}

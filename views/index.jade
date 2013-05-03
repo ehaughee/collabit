@@ -7,6 +7,11 @@ block content
     #messagebox
       textarea#message(disabled="true")
   script
+    // Application code
+    // ================
+    var logged_in = false;
+    var connected = false;
+
     // ACE Editor code
     // ===============
     var editor = ace.edit("editor");
@@ -16,15 +21,25 @@ block content
     
     // Socket.IO code
     // ==============
-    var socket = io.connect('http://collabit-4169.use1.actionbox.io:3000/');
+    // var socket = io.connect('http://collabit-4169.use1.actionbox.io:3000/');
+    var socket = io.connect(document.URL);
     
     socket.on('connect', function() {
-      console.log('SOCKET: Connection detected.  Emitting \'adduser\'');
-      var name = get_username();
-      if (name !== false) {
-        socket.emit('adduser', name);
+      console.log('APP: Attempting to connect, connected: ' + connected);
+      
+      if (!connected) {
+        console.log('SOCKET: Connection detected.  Emitting \'adduser\'');
+
+        var name = get_username();
+        if (name !== false) {
+          socket.emit('adduser', name);
+          connected = true;
+          $('#btn_login').attr('disabled', 'true');
+        }
       }
     });
+
+    // TODO: Implement "login" and "logout" functionality
 
     function get_username() {
       name = prompt('What is your name?');
@@ -59,6 +74,10 @@ block content
           send_chat();
           return false;
         }
+      });
+
+      $('#btn_login').click(function() {
+        get_username();
       });
       
       editor.on('change', send_code);
