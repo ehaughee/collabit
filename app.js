@@ -4,7 +4,7 @@
  */
 
 var express = require('express')
-  // , sharejs = require('share').server
+  , sharejs = require('share').server
   , routes = require('./routes')
   , user = require('./routes/user')
   , http = require('http')
@@ -12,8 +12,8 @@ var express = require('express')
 
 var app = express();
 
-app.configure(function(){
-  app.set('port', process.env.PORT || 3000);
+app.configure(function() {
+  app.set('port', process.env.PORT || 4000);
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
   app.use(express.favicon());
@@ -39,8 +39,8 @@ var server = http.createServer(app).listen(app.get('port'), function(){
  * ShareJS Code
  */
 
-// var options = {db: {type: 'none'}};
-// sharejs.attach(server, options);
+var options = {db: {type: 'none'}};
+sharejs.attach(app, options);
 
 /**
  * Socket.IO Code

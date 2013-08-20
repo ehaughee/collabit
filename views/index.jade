@@ -18,6 +18,12 @@ block content
     editor.getSession().setUseWorker(false);
     editor.setTheme("ace/theme/monokai");
     editor.getSession().setMode("ace/mode/javascript");
+
+    // Share.JS code
+    // ==============
+    sharejs.open('code', 'text', document.URL, function(error, doc) {
+      doc.attach_ace(editor);
+    });
     
     // Socket.IO code
     // ==============
@@ -55,7 +61,7 @@ block content
 
     socket.on('updatechat', function(username, data) {
       console.log('SOCKET: \'updatechat\' emission detected.');
-      $('#messages').append('<b>'+username + ':</b> ' + data + '<br>');
+      $('#messages').append('<b>' + username + ':</b> ' + data + '<br>');
       var elem = document.getElementById('messages');
       elem.scrollTop = elem.scrollHeight;
     });
