@@ -21,29 +21,29 @@ block content
 
     // Share.JS code
     // ==============
-    sharejs.open('code', 'text', document.URL, function(error, doc) {
+    sharejs.open('code', 'text', function(error, doc) {
       doc.attach_ace(editor);
     });
     
     // Socket.IO code
     // ==============
     // var socket = io.connect('http://collabit-4169.use1.actionbox.io:3000/');
-    var socket = io.connect(document.URL);
+    //- var socket = io.connect(document.URL);
     
-    socket.on('connect', function() {
-      console.log('APP: Attempting to connect, connected: ' + connected);
+    //- socket.on('connect', function() {
+    //-   console.log('APP: Attempting to connect, connected: ' + connected);
       
-      if (!connected) {
-        console.log('SOCKET: Connection detected.  Emitting \'adduser\'');
+    //-   if (!connected) {
+    //-     console.log('SOCKET: Connection detected.  Emitting \'adduser\'');
 
-        var name = get_username();
-        if (name !== false) {
-          socket.emit('adduser', name);
-          connected = true;
-          $('#btn_login').attr('disabled', 'true');
-        }
-      }
-    });
+    //-     var name = get_username();
+    //-     if (name !== false) {
+    //-       socket.emit('adduser', name);
+    //-       connected = true;
+    //-       $('#btn_login').attr('disabled', 'true');
+    //-     }
+    //-   }
+    //- });
 
     // TODO: Implement "login" and "logout" functionality
 
@@ -59,18 +59,18 @@ block content
 
     }
 
-    socket.on('updatechat', function(username, data) {
-      console.log('SOCKET: \'updatechat\' emission detected.');
-      $('#messages').append('<b>' + username + ':</b> ' + data + '<br>');
-      var elem = document.getElementById('messages');
-      elem.scrollTop = elem.scrollHeight;
-    });
+    //- socket.on('updatechat', function(username, data) {
+    //-   console.log('SOCKET: \'updatechat\' emission detected.');
+    //-   $('#messages').append('<b>' + username + ':</b> ' + data + '<br>');
+    //-   var elem = document.getElementById('messages');
+    //-   elem.scrollTop = elem.scrollHeight;
+    //- });
     
-    socket.on('updateeditor', function(code) {
-      console.log('SOCKET: \'updateeditor\' emission detected.');
-      // TODO: Uncommenting the below line causes an infite loop of updateeditor calls
-      // editor.setValue(code);
-    });
+    //- socket.on('updateeditor', function(code) {
+    //-   console.log('SOCKET: \'updateeditor\' emission detected.');
+    //-   // TODO: Uncommenting the below line causes an infite loop of updateeditor calls
+    //-   // editor.setValue(code);
+    //- });
 
     // Event handlers
     // ==============
@@ -95,11 +95,11 @@ block content
       if (message !== "") {
         messageBox.val('');
         console.log('SOCKET: Send chat command detected.  Emitting \'sendchat\'');
-        socket.emit('sendchat', message);
+        //- socket.emit('sendchat', message);
       }
     }
 
     function send_code() {
       console.log('SOCKET: Editor change detected.  Emitting \'sendcode\'');
-      socket.emit('sendcode', editor.getValue());
+      //- socket.emit('sendcode', editor.getValue());
     }

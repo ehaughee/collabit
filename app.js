@@ -29,7 +29,6 @@ app.configure('development', function(){
 });
 
 app.get('/', routes.index);
-app.get('/users', user.list);
 
 var server = http.createServer(app).listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));
@@ -45,32 +44,32 @@ sharejs.attach(app, options);
 /**
  * Socket.IO Code
  */
-var io = require('socket.io').listen(server);
+// var io = require('socket.io').listen(server);
 
-var usernames = {};
-io.sockets.on('connection', function (socket) {
-  console.log("LOG: Connection detected");
+// var usernames = {};
+// io.sockets.on('connection', function (socket) {
+//   console.log("LOG: Connection detected");
 
-  socket.on('sendcode', function(code) {
-    io.sockets.emit('updateeditor', code);
-  });
+//   socket.on('sendcode', function(code) {
+//     io.sockets.emit('updateeditor', code);
+//   });
 
-  socket.on('sendchat', function (data) {
-		io.sockets.emit('updatechat', socket.username, data);
-	});
+//   socket.on('sendchat', function (data) {
+// 		io.sockets.emit('updatechat', socket.username, data);
+// 	});
 
-	socket.on('adduser', function(username){
-		socket.username = username;
-		usernames[username] = username;
-		socket.emit('updatechat', 'SERVER', 'you have connected');
-		socket.broadcast.emit('updatechat', 'SERVER', username + ' has connected');
-		io.sockets.emit('updateusers', usernames);
-	});
+// 	socket.on('adduser', function(username){
+// 		socket.username = username;
+// 		usernames[username] = username;
+// 		socket.emit('updatechat', 'SERVER', 'you have connected');
+// 		socket.broadcast.emit('updatechat', 'SERVER', username + ' has connected');
+// 		io.sockets.emit('updateusers', usernames);
+// 	});
 
-	socket.on('disconnect', function(){
-		delete usernames[socket.username];
-		io.sockets.emit('updateusers', usernames);
-		socket.broadcast.emit('updatechat', 'SERVER', socket.username + ' has disconnected');
-	});
-});
+// 	socket.on('disconnect', function(){
+// 		delete usernames[socket.username];
+// 		io.sockets.emit('updateusers', usernames);
+// 		socket.broadcast.emit('updatechat', 'SERVER', socket.username + ' has disconnected');
+// 	});
+// });
 
