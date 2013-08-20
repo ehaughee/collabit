@@ -5,11 +5,11 @@ body {
 
 #editor { 
   position: absolute;
-  top: 40px;
+  top: 0;
 /*  right: 0; */
   bottom: 0;
   left: 0;
-  width: 70%;
+  width: 100%;
 }
 
 #chat {

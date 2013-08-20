@@ -2,10 +2,10 @@ extends layout
 
 block content
   #editor
-  #chat
-    #messages
-    #messagebox
-      textarea#message(disabled="true")
+  //- #chat
+  //-   #messages
+  //-   #messagebox
+  //-     textarea#message(disabled="true")
   script
     // Application code
     // ================
@@ -86,7 +86,7 @@ block content
         get_username();
       });
       
-      editor.on('change', send_code);
+      //- editor.on('change', send_code);
     });
 
     function send_chat() {
