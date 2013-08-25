@@ -9,8 +9,8 @@ block content
   script
     // Application code
     // ================
-    var logged_in = false;
-    var connected = false;
+    //- var logged_in = false;
+    //- var connected = false;
 
     // ACE Editor code
     // ===============
@@ -47,17 +47,17 @@ block content
 
     // TODO: Implement "login" and "logout" functionality
 
-    function get_username() {
-      name = prompt('What is your name?');
-      if (name !== "") {
-        $('textarea#message').removeAttr('disabled');
-        return name;
-      }
-      else {
-        return false;
-      }
+    //- function get_username() {
+    //-   name = prompt('What is your name?');
+    //-   if (name !== "") {
+    //-     $('textarea#message').removeAttr('disabled');
+    //-     return name;
+    //-   }
+    //-   else {
+    //-     return false;
+    //-   }
 
-    }
+    //- }
 
     //- socket.on('updatechat', function(username, data) {
     //-   console.log('SOCKET: \'updatechat\' emission detected.');
@@ -75,31 +75,29 @@ block content
     // Event handlers
     // ==============
     $(function(){
-      $('textarea#message').keypress(function(e) {
-        if(e.which == 13) {
-          send_chat();
-          return false;
-        }
+      $('select#mode').change(function () {
+        editor.getSession().setMode("ace/mode/" + this.value);
       });
+    //-   $('textarea#message').keypress(function(e) {
+    //-     if(e.which == 13) {
+    //-       send_chat();
+    //-       return false;
+    //-     }
+    //-   });
 
-      $('#btn_login').click(function() {
-        get_username();
-      });
+    //-   $('#btn_login').click(function() {
+    //-     get_username();
+    //-   });
       
       //- editor.on('change', send_code);
     });
 
-    function send_chat() {
-      var messageBox = $('textarea#message')
-      var message = messageBox.val();
-      if (message !== "") {
-        messageBox.val('');
-        console.log('SOCKET: Send chat command detected.  Emitting \'sendchat\'');
-        //- socket.emit('sendchat', message);
-      }
-    }
-
-    function send_code() {
-      console.log('SOCKET: Editor change detected.  Emitting \'sendcode\'');
-      //- socket.emit('sendcode', editor.getValue());
-    }
+    //- function send_chat() {
+    //-   var messageBox = $('textarea#message')
+    //-   var message = messageBox.val();
+    //-   if (message !== "") {
+    //-     messageBox.val('');
+    //-     console.log('SOCKET: Send chat command detected.  Emitting \'sendchat\'');
+    //-     //- socket.emit('sendchat', message);
+    //-   }
+    //- }
