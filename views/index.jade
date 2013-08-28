@@ -9,93 +9,29 @@ block content
   script
     // Application code
     // ================
-
-    // ACE Editor code
-    // ===============
-    var editor = ace.edit("editor");
-    editor.getSession().setUseWorker(false);
-    editor.setTheme("ace/theme/monokai");
-    editor.getSession().setMode("ace/mode/javascript");
-
-    // Share.JS code
-    // ==============
-    sharejs.open('code', 'text', function(error, doc) {
-      doc.attach_ace(editor);
-    });
-    
-    // Socket.IO code
-    // ==============
-    // var socket = io.connect('http://collabit-4169.use1.actionbox.io:3000/');
-    //- var socket = io.connect(document.URL);
-    
-    //- socket.on('connect', function() {
-    //-   console.log('APP: Attempting to connect, connected: ' + connected);
-      
-    //-   if (!connected) {
-    //-     console.log('SOCKET: Connection detected.  Emitting \'adduser\'');
-
-    //-     var name = get_username();
-    //-     if (name !== false) {
-    //-       socket.emit('adduser', name);
-    //-       connected = true;
-    //-       $('#btn_login').attr('disabled', 'true');
-    //-     }
-    //-   }
-    //- });
-
-    // TODO: Implement "login" and "logout" functionality
-
-    //- function get_username() {
-    //-   name = prompt('What is your name?');
-    //-   if (name !== "") {
-    //-     $('textarea#message').removeAttr('disabled');
-    //-     return name;
-    //-   }
-    //-   else {
-    //-     return false;
-    //-   }
-
-    //- }
-
-    //- socket.on('updatechat', function(username, data) {
-    //-   console.log('SOCKET: \'updatechat\' emission detected.');
-    //-   $('#messages').append('<b>' + username + ':</b> ' + data + '<br>');
-    //-   var elem = document.getElementById('messages');
-    //-   elem.scrollTop = elem.scrollHeight;
-    //- });
-    
-    //- socket.on('updateeditor', function(code) {
-    //-   console.log('SOCKET: \'updateeditor\' emission detected.');
-    //-   // TODO: Uncommenting the below line causes an infite loop of updateeditor calls
-    //-   // editor.setValue(code);
-    //- });
-
-    // Event handlers
-    // ==============
     $(function(){
-      $('select#mode').change(function () {
-        editor.getSession().setMode("ace/mode/" + this.value);
+
+      // ACE Editor code
+      // ===============
+      var editor = ace.edit("editor");
+      editor.getSession().setUseWorker(false);
+      editor.setTheme("ace/theme/monokai");
+      editor.getSession().setMode("ace/mode/javascript");
+
+      // Chosen
+      // ===============
+      $("select#mode").chosen({width: "180px"})
+        .on('change', function () {
+          editor.getSession().setMode("ace/mode/" + this.value);
+        });
+
+      // Share.JS code
+      // ==============
+      sharejs.open('code', 'text', function(error, doc) {
+        doc.attach_ace(editor);
       });
-    //-   $('textarea#message').keypress(function(e) {
-    //-     if(e.which == 13) {
-    //-       send_chat();
-    //-       return false;
-    //-     }
-    //-   });
-
-    //-   $('#btn_login').click(function() {
-    //-     get_username();
-    //-   });
       
-      //- editor.on('change', send_code);
-    });
+      // Event handlers
+      // ==============
 
-    //- function send_chat() {
-    //-   var messageBox = $('textarea#message')
-    //-   var message = messageBox.val();
-    //-   if (message !== "") {
-    //-     messageBox.val('');
-    //-     console.log('SOCKET: Send chat command detected.  Emitting \'sendchat\'');
-    //-     //- socket.emit('sendchat', message);
-    //-   }
-    //- }
+    });

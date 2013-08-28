@@ -55,7 +55,7 @@ body {
   right: 0;
   height: 40px;
   background-color: black;
-  color: white;
+  /*color: white;*/
 }
 
 #header #btn_login {
