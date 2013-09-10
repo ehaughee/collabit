@@ -5,8 +5,8 @@
 
 var express = require('express')
   , sharejs = require('share').server
-  , routes = require('./routes')
-  , user = require('./routes/user')
+  // , routes = require('./routes')
+  // , user = require('./routes/user')
   , http = require('http')
   , path = require('path');
 
@@ -28,7 +28,33 @@ app.configure('development', function(){
   app.use(express.errorHandler());
 });
 
-app.get('/', routes.index);
+var rooms = [];
+
+/**
+ * Routes
+ */
+
+app.get('/', function (req, res) {
+  var session = "";
+
+  do {
+    session = makeid();
+  } while (rooms.indexOf(session) !== -1);
+
+  rooms.push(session);
+
+  res.redirect("/" + session);
+});
+
+app.get('/:id([A-Za-z0-9]{6})', function (req, res) {
+  var session = req.params.id;
+
+  if (rooms.indexOf(session) === -1) {
+    rooms.push(session);
+  }
+
+  res.render('session', { title: 'Collabit', session: session });
+});
 
 var server = http.createServer(app).listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));
@@ -40,6 +66,18 @@ var server = http.createServer(app).listen(app.get('port'), function(){
 
 var options = {db: {type: 'none'}};
 sharejs.attach(app, options);
+
+function makeid()
+{
+  var text = [];
+  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+  for(var i = 0; i < 6; i++) {
+    text.push(possible.charAt(Math.floor(Math.random() * possible.length)));
+  }
+
+  return text.join("");
+}
 
 /**
  * Socket.IO Code

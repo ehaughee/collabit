@@ -54,10 +54,18 @@ body {
   left: 0;
   right: 0;
   height: 40px;
+  width: 100%;
   background-color: black;
   /*color: white;*/
 }
 
 #header #btn_login {
   float: right;
+}
+
+select#mode {
+   height: 300px;
+   position: absolute;
+   top: 50%; 
+   margin-top: -150px;
 }

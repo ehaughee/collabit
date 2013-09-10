@@ -20,14 +20,19 @@ block content
 
       // Chosen
       // ===============
-      $("select#mode").chosen({width: "180px"})
+      $("select#mode").chosen({ width: "180px" })
         .on('change', function () {
           editor.getSession().setMode("ace/mode/" + this.value);
         });
 
+      //- $("select#theme").chosen({ width: "180px" })
+      //-   .on('change', function() {
+      //-     editor.setTheme("ace/theme/" + this.value);
+      //-   });
+
       // Share.JS code
       // ==============
-      sharejs.open('code', 'text', function(error, doc) {
+      sharejs.open('#{session}', 'text', function(error, doc) {
         doc.attach_ace(editor);
       });
       
