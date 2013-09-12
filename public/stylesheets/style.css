@@ -69,3 +69,13 @@ select#mode {
    top: 50%; 
    margin-top: -150px;
 }
+
+#overlay {
+  display: none;
+  position: absolute;
+  background: #eee;
+}
+
+#img-load {
+  position:absolute;
+}

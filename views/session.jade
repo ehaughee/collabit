@@ -3,12 +3,14 @@ extends layout
 block content
   #editor
   include includes/chat
+  #overlay
+    img#img-load(src='/images/img-load.gif')
   script
     // Application code
     // ================
     var connected = false;
 
-    $(function(){
+    $(function() {
 
       // ACE Editor code
       // ===============
@@ -29,6 +31,27 @@ block content
       //-     editor.setTheme("ace/theme/" + this.value);
       //-   });
 
+      // Loading code
+      // ==============
+      $chat = $("#chat"); // CHANGE it to the table's id you have
+      $overlay = $("#overlay");
+      $img_load = $("#img-load");
+
+      $overlay.css({
+        opacity : 0.5,
+        top     : $chat.offset().top,
+        left    : $chat.offset().left,
+        height  : $chat.outerHeight(),
+        width   : $chat.outerWidth()
+      });
+
+      $img_load.css({
+        top  : ($chat.height() / 2) - ($img_load.outerHeight() / 2),
+        left : ($chat.width() / 2) - ($img_load.outerWidth() / 2)
+      });
+
+      $overlay.fadeIn();
+
       // Share.JS code
       // ==============
       sharejs.open('#{session}', 'text', function(error, doc) {
@@ -41,12 +64,13 @@ block content
 
       socket.on('connect', function() {
         if (!connected) {
-          console.log('SOCKET: Connection detected.  Emitting \'adduser\'');
+          console.log("SOCKET: Connection detected.  Emitting 'adduser'");
 
           var name = get_username();
           if (name !== false) {
             socket.emit('adduser', name, document.URL.substr(-6));
             connected = true;
+            $overlay.fadeOut();
           }
         }
       });
