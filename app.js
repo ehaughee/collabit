@@ -5,6 +5,7 @@
 
 var express = require('express')
   , sharejs = require('share').server
+  , socket  = require('socket.io')
   // , routes = require('./routes')
   // , user = require('./routes/user')
   , http = require('http')
@@ -28,6 +29,8 @@ app.configure('development', function(){
   app.use(express.errorHandler());
 });
 
+// TODO: Make this a dictionary key = room name, value = username list 
+//       and maybe other info
 var rooms = [];
 
 /**
@@ -82,32 +85,43 @@ function makeid()
 /**
  * Socket.IO Code
  */
-// var io = require('socket.io').listen(server);
+var io = require('socket.io').listen(server);
 
-// var usernames = {};
-// io.sockets.on('connection', function (socket) {
-//   console.log("LOG: Connection detected");
+// TODO: Make rooms contain usernames list
+var usernames = {};
+io.of('/chat').on('connection', function (socket) {
 
-//   socket.on('sendcode', function(code) {
-//     io.sockets.emit('updateeditor', code);
-//   });
+  socket.on('sendchat', function (data) {
+		io.of('/chat').in(socket.room).emit('updatechat', socket.username, data);
+	});
 
-//   socket.on('sendchat', function (data) {
-// 		io.sockets.emit('updatechat', socket.username, data);
-// 	});
+	socket.on('adduser', function(username, room){
+    console.log("adduser: " + username + " - " + room);
+    if (username !== "" || !username.match(/server/i)) {
+      socket.username = username;
+      usernames[username] = username;
 
-// 	socket.on('adduser', function(username){
-// 		socket.username = username;
-// 		usernames[username] = username;
-// 		socket.emit('updatechat', 'SERVER', 'you have connected');
-// 		socket.broadcast.emit('updatechat', 'SERVER', username + ' has connected');
-// 		io.sockets.emit('updateusers', usernames);
-// 	});
+      if (typeof room !== "undefined" && room.match(/[A-Za-z0-9]{6}/) && rooms.indexOf(room) !== -1) {
+        socket.join(room);
+        socket.room = room;
+      }
+      else {
+        socket.emit('error', 'Invalid room: ' + room);
+      }
 
-// 	socket.on('disconnect', function(){
-// 		delete usernames[socket.username];
-// 		io.sockets.emit('updateusers', usernames);
-// 		socket.broadcast.emit('updatechat', 'SERVER', socket.username + ' has disconnected');
-// 	});
-// });
+  		socket.emit('updatechat', 'SERVER', 'you have connected to ' + socket.room);
+  		socket.broadcast.to(socket.room).emit('updatechat', 'SERVER', username + ' has connected');
+  		// io.sockets.emit('updateusers', usernames);
+    }
+    else {
+      socket.emit('error', 'Invalid username: ' + username);
+    }
+	});
+
+	socket.on('disconnect', function(){
+		delete usernames[socket.username];
+		// io.sockets.emit('updateusers', usernames);
+		socket.broadcast.emit('updatechat', 'SERVER', socket.username + ' has disconnected');
+	});
+});
 

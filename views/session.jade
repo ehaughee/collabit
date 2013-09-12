@@ -2,13 +2,12 @@ extends layout
 
 block content
   #editor
-  //- #chat
-  //-   #messages
-  //-   #messagebox
-  //-     textarea#message(disabled="true")
+  include includes/chat
   script
     // Application code
     // ================
+    var connected = false;
+
     $(function(){
 
       // ACE Editor code
@@ -35,8 +34,67 @@ block content
       sharejs.open('#{session}', 'text', function(error, doc) {
         doc.attach_ace(editor);
       });
+
+      // Socket.IO code
+      // ==============
+      var socket = io.connect("http://" + document.domain + "/chat");
+
+      socket.on('connect', function() {
+        if (!connected) {
+          console.log('SOCKET: Connection detected.  Emitting \'adduser\'');
+
+          var name = get_username();
+          if (name !== false) {
+            socket.emit('adduser', name, document.URL.substr(-6));
+            connected = true;
+          }
+        }
+      });
+
+      socket.on('updatechat', function(username, data) {
+        console.log('SOCKET: \'updatechat\' emission detected.');
+        $('#messages').append('<b>' + username + ':</b> ' + data + '<br>');
+        var elem = document.getElementById('messages');
+        elem.scrollTop = elem.scrollHeight;
+      });
+
+      socket.on('error', function(message) {
+        console.log('ERROR: ' + message);
+      });
       
+      function send_chat() {
+        var messageBox = $('textarea#message')
+        var message = messageBox.val();
+        if (message !== "") {
+          messageBox.val('');
+          console.log('SOCKET: Send chat command detected.  Emitting \'sendchat\'');
+          socket.emit('sendchat', message);
+        }
+      }
+
+      function get_username() {
+        name = prompt('What is your name?');
+        if (name !== "") {
+          $('textarea#message').removeAttr('disabled');
+          return name;
+        }
+        else {
+          return false;
+        }
+
+      }
+
       // Event handlers
       // ==============
+      $('textarea#message').keypress(function(e) {
+        if(e.which == 13) {
+          send_chat();
+          return false;
+        }
+      });
+
+      $('#btn_login').click(function() {
+        get_username();
+      });
 
     });
