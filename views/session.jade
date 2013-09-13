@@ -4,7 +4,10 @@ block content
   #editor
   include includes/chat
   #overlay
+    span#chat_load_msg
+    //- TODO: Make this a less ugly loader
     img#img-load(src='/images/img-load.gif')
+    button#btn_join Join Chat
   script
     // Application code
     // ================
@@ -36,6 +39,8 @@ block content
       $chat = $("#chat"); // CHANGE it to the table's id you have
       $overlay = $("#overlay");
       $img_load = $("#img-load");
+      $btn_join = $("#btn_join");
+      $chat_load_msg = $("#chat_load_msg");
 
       $overlay.css({
         opacity : 0.5,
@@ -65,13 +70,7 @@ block content
       socket.on('connect', function() {
         if (!connected) {
           console.log("SOCKET: Connection detected.  Emitting 'adduser'");
-
-          var name = get_username();
-          if (name !== false) {
-            socket.emit('adduser', name, document.URL.substr(-6));
-            connected = true;
-            $overlay.fadeOut();
-          }
+          connect();
         }
       });
 
@@ -85,20 +84,42 @@ block content
       socket.on('error', function(message) {
         console.log('ERROR: ' + message);
       });
+
+      function connect() {
+        var name = get_username();
+        if (name !== false) {
+          socket.emit('adduser', name, document.URL.substr(-6));
+          connected = true;
+          $overlay.fadeOut();
+        }
+        else {
+          $img_load.hide();
+          $btn_join.css({
+            display: "inline",
+            top  : ($chat.height() / 2) - ($btn_join.outerHeight() / 2),
+            left : ($chat.width() / 2) - ($btn_join.outerWidth() / 2)
+          });
+
+          // TODO: Make this less hideous
+          $chat_load_msg.text("Empty or invalid username.  Please click login to try again.");
+        }
+      }
       
       function send_chat() {
-        var messageBox = $('textarea#message')
-        var message = messageBox.val();
-        if (message !== "") {
-          messageBox.val('');
-          console.log('SOCKET: Send chat command detected.  Emitting \'sendchat\'');
-          socket.emit('sendchat', message);
+        if (connected) {
+          var messageBox = $('textarea#message')
+          var message = messageBox.val();
+          if (message !== "") {
+            messageBox.val('');
+            console.log('SOCKET: Send chat command detected.  Emitting \'sendchat\'');
+            socket.emit('sendchat', message);
+          }
         }
       }
 
       function get_username() {
         name = prompt('What is your name?');
-        if (name !== "") {
+        if (name !== "" && name !== "null" && !name.match(/server/i)) {
           $('textarea#message').removeAttr('disabled');
           return name;
         }
@@ -117,8 +138,10 @@ block content
         }
       });
 
-      $('#btn_login').click(function() {
-        get_username();
+      $('#btn_join').click(function() {
+        if (!connected) {
+          connect();
+        }
       });
 
     });
