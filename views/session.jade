@@ -15,7 +15,7 @@ block content
 
     $(function() {
 
-      // ACE Editor code
+      // ACE Editor
       // ===============
       var editor = ace.edit("editor");
       editor.getSession().setUseWorker(false);
@@ -34,8 +34,8 @@ block content
       //-     editor.setTheme("ace/theme/" + this.value);
       //-   });
 
-      // Loading code
-      // ==============
+      // Loading overlay
+      // ===============
       $chat = $("#chat"); // CHANGE it to the table's id you have
       $overlay = $("#overlay");
       $img_load = $("#img-load");
@@ -57,13 +57,13 @@ block content
 
       $overlay.fadeIn();
 
-      // Share.JS code
+      // Share.JS
       // ==============
       sharejs.open('#{session}', 'text', function(error, doc) {
         doc.attach_ace(editor);
       });
 
-      // Socket.IO code
+      // Socket.IO
       // ==============
       var socket = io.connect("http://" + document.domain + "/chat");
 
@@ -79,6 +79,10 @@ block content
         $('#messages').append('<b>' + username + ':</b> ' + data + '<br>');
         var elem = document.getElementById('messages');
         elem.scrollTop = elem.scrollHeight;
+      });
+
+      socket.on('updateusers', function(usernames) {
+        console.log('SOCKET: updateusers' + usernames.join(", "));
       });
 
       socket.on('error', function(message) {
@@ -101,7 +105,7 @@ block content
           });
 
           // TODO: Make this less hideous
-          $chat_load_msg.text("Empty or invalid username.  Please click login to try again.");
+          $chat_load_msg.text("Empty or invalid username.  Please click Join Chat to try again.");
         }
       }
       
@@ -118,8 +122,8 @@ block content
       }
 
       function get_username() {
-        name = prompt('What is your name?');
-        if (name !== "" && name !== "null" && !name.match(/server/i)) {
+        var name = prompt('What is your name?');
+        if (name !== "" && name !== null && !name.match(/server/i)) {
           $('textarea#message').removeAttr('disabled');
           return name;
         }

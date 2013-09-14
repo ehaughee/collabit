@@ -29,9 +29,7 @@ app.configure('development', function(){
   app.use(express.errorHandler());
 });
 
-// TODO: Make this a dictionary key = room name, value = username list 
-//       and maybe other info
-var rooms = [];
+var rooms = {};
 
 /**
  * Routes
@@ -42,9 +40,9 @@ app.get('/', function (req, res) {
 
   do {
     session = makeid();
-  } while (rooms.indexOf(session) !== -1);
+  } while (typeof rooms[session] !== "undefined");
 
-  rooms.push(session);
+  rooms[session] = { usernames: [] };
 
   res.redirect("/" + session);
 });
@@ -52,8 +50,8 @@ app.get('/', function (req, res) {
 app.get('/:id([A-Za-z0-9]{6})', function (req, res) {
   var session = req.params.id;
 
-  if (rooms.indexOf(session) === -1) {
-    rooms.push(session);
+  if (typeof rooms[session] === "undefined") {
+    rooms[session] = { usernames: [] };
   }
 
   res.render('session', { title: 'Collabit', session: session });
@@ -87,8 +85,6 @@ function makeid()
  */
 var io = require('socket.io').listen(server);
 
-// TODO: Make rooms contain usernames list
-var usernames = {};
 io.of('/chat').on('connection', function (socket) {
 
   socket.on('sendchat', function (data) {
@@ -97,21 +93,22 @@ io.of('/chat').on('connection', function (socket) {
 
 	socket.on('adduser', function(username, room){
     console.log("adduser: " + username + " - " + room);
-    if (username !== "" || !username.match(/server/i)) {
-      socket.username = username;
-      usernames[username] = username;
-
-      if (typeof room !== "undefined" && room.match(/[A-Za-z0-9]{6}/) && rooms.indexOf(room) !== -1) {
+    if (username !== "" && !username.match(/server/i)) {
+      if (typeof room !== "undefined" && room.match(/[A-Za-z0-9]{6}/) && typeof rooms[room] !== "undefined") {
         socket.join(room);
         socket.room = room;
       }
       else {
         socket.emit('error', 'Invalid room: ' + room);
+        return;
       }
 
-  		socket.emit('updatechat', 'SERVER', 'you have connected to ' + socket.room);
+      socket.username = username;
+      rooms[room].usernames.push(username);
+
+  		socket.emit('updatechat', 'SERVER', 'you have connected to room ' + socket.room);
   		socket.broadcast.to(socket.room).emit('updatechat', 'SERVER', username + ' has connected');
-  		// io.sockets.emit('updateusers', usernames);
+  		io.of('/chat').emit('updateusers', rooms[room].usernames);
     }
     else {
       socket.emit('error', 'Invalid username: ' + username);
@@ -119,9 +116,20 @@ io.of('/chat').on('connection', function (socket) {
 	});
 
 	socket.on('disconnect', function(){
-		delete usernames[socket.username];
-		// io.sockets.emit('updateusers', usernames);
-		socket.broadcast.emit('updatechat', 'SERVER', socket.username + ' has disconnected');
+    if (typeof rooms[socket.room] !== "undefined")
+		{
+      if (typeof rooms[socket.room].usernames !== "undefined") {
+        delete rooms[socket.room].usernames[socket.username];
+      }
+      if (rooms[socket.room].usernames.length === 0) {
+        console.log("Deleting empty room: " + rooms[socket.room]);
+        delete rooms[socket.room];
+      }
+      else {
+        io.of('/chat').emit('updateusers', rooms[socket.room].usernames);
+        socket.broadcast.to(socket.room).emit('updatechat', 'SERVER', socket.username + ' has disconnected');
+      }
+    }
 	});
 });
 
