@@ -1,4 +1,3 @@
-
 /**
  * Module dependencies.
  */
@@ -68,8 +67,7 @@ var server = http.createServer(app).listen(app.get('port'), function(){
 var options = {db: {type: 'none'}};
 sharejs.attach(app, options);
 
-function makeid()
-{
+function makeid() {
   var text = [];
   var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
@@ -87,11 +85,11 @@ var io = require('socket.io').listen(server);
 
 io.of('/chat').on('connection', function (socket) {
 
-  socket.on('sendchat', function (data) {
-		io.of('/chat').in(socket.room).emit('updatechat', socket.username, data);
-	});
+    socket.on('sendchat', function (data) {
+      io.of('/chat').in(socket.room).emit('updatechat', socket.username, data);
+    });
 
-	socket.on('adduser', function(username, room){
+    socket.on('adduser', function(username, room){
     console.log("adduser: " + username + " - " + room);
     if (username !== "" && !username.match(/server/i)) {
       if (typeof room !== "undefined" && room.match(/[A-Za-z0-9]{6}/) && typeof rooms[room] !== "undefined") {
@@ -104,7 +102,10 @@ io.of('/chat').on('connection', function (socket) {
       }
 
       socket.username = username;
-      rooms[room].usernames.push(username);
+      
+      if (rooms[room].usernames.indexOf(username) === -1) {
+      	rooms[room].usernames.push(username);
+      }
 
   		socket.emit('updatechat', 'SERVER', 'you have connected to room ' + socket.room);
   		socket.broadcast.to(socket.room).emit('updatechat', 'SERVER', username + ' has connected');
@@ -116,8 +117,7 @@ io.of('/chat').on('connection', function (socket) {
 	});
 
 	socket.on('disconnect', function(){
-    if (typeof rooms[socket.room] !== "undefined")
-		{
+    if (typeof rooms[socket.room] !== "undefined") {
       if (typeof rooms[socket.room].usernames !== "undefined") {
         delete rooms[socket.room].usernames[socket.username];
       }
