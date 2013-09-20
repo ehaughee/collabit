@@ -9,6 +9,7 @@
     "express": "3.1.0",
     "jade": "*",
     "socket.io": "~0.9.16",
-    "share": "~0.6.2"
+    "share": "~0.6.2",
+    "sanitizer": "0.0.15"
   }
 }

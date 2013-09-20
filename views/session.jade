@@ -74,9 +74,9 @@ block content
         }
       });
 
-      socket.on('updatechat', function(username, data) {
+      socket.on('updatechat', function(username, messsage) {
         console.log('SOCKET: \'updatechat\' emission detected.');
-        $('#messages').append('<b>' + username + ':</b> ' + data + '<br>');
+        $('#messages').append('<b>' + username + ':</b> ' + messsage + '<br>');
         var elem = document.getElementById('messages');
         elem.scrollTop = elem.scrollHeight;
       });
@@ -130,7 +130,6 @@ block content
         else {
           return false;
         }
-
       }
 
       // Event handlers

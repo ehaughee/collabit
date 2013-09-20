@@ -8,7 +8,8 @@ var express = require('express')
   // , routes = require('./routes')
   // , user = require('./routes/user')
   , http = require('http')
-  , path = require('path');
+  , path = require('path')
+  , sanitizer = require('sanitizer');
 
 var app = express();
 
@@ -47,7 +48,7 @@ app.get('/', function (req, res) {
 });
 
 app.get('/:id([A-Za-z0-9]{6})', function (req, res) {
-  var session = req.params.id;
+  var session = sanitizer.escape(req.params.id);
 
   if (typeof rooms[session] === "undefined") {
     rooms[session] = { usernames: [] };
@@ -85,12 +86,15 @@ var io = require('socket.io').listen(server);
 
 io.of('/chat').on('connection', function (socket) {
 
-    socket.on('sendchat', function (data) {
-      io.of('/chat').in(socket.room).emit('updatechat', socket.username, data);
+    socket.on('sendchat', function (message) {
+      message = sanitizer.escape(message);
+      io.of('/chat').in(socket.room).emit('updatechat', socket.username, message);
     });
 
     socket.on('adduser', function(username, room){
-    console.log("adduser: " + username + " - " + room);
+    username = sanitizer.escape(username);
+    room = sanitizer.escape(room);
+
     if (username !== "" && !username.match(/server/i)) {
       if (typeof room !== "undefined" && room.match(/[A-Za-z0-9]{6}/) && typeof rooms[room] !== "undefined") {
         socket.join(room);
