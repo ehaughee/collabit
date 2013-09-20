@@ -74,9 +74,10 @@ block content
         }
       });
 
-      socket.on('updatechat', function(username, messsage) {
+      socket.on('updatechat', function(username, message) {
         console.log('SOCKET: \'updatechat\' emission detected.');
-        $('#messages').append('<b>' + username + ':</b> ' + messsage + '<br>');
+        message = tokenize(message);
+        $('#messages').append('<b>' + username + ':</b> ' + message + '<br>');
         var elem = document.getElementById('messages');
         elem.scrollTop = elem.scrollHeight;
       });
@@ -130,6 +131,16 @@ block content
         else {
           return false;
         }
+      }
+
+      function tokenize(message) {
+        console.log("TOKENIZING: " + message);
+        // Links
+        var pat_link = /((http:\/\/)?\S+\.\S+)/ig;
+        var rep_link = '<a href="$1">$1</a>';
+        message = message.replace(pat_link, rep_link);
+        console.log("RESULT: " + message);
+        return message;
       }
 
       // Event handlers
