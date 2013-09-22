@@ -5,8 +5,6 @@
 var express = require('express')
   , sharejs = require('share').server
   , socket  = require('socket.io')
-  // , routes = require('./routes')
-  // , user = require('./routes/user')
   , http = require('http')
   , path = require('path')
   , sanitizer = require('sanitizer');
@@ -86,12 +84,13 @@ var io = require('socket.io').listen(server);
 
 io.of('/chat').on('connection', function (socket) {
 
-    socket.on('sendchat', function (message) {
-      message = sanitizer.escape(message);
-      io.of('/chat').in(socket.room).emit('updatechat', socket.username, message);
-    });
+  socket.on('sendchat', function (message) {
+    message = sanitizer.escape(message);
 
-    socket.on('adduser', function(username, room){
+    io.of('/chat').in(socket.room).emit('updatechat', socket.username, message);
+  });
+
+  socket.on('adduser', function(username, room){
     username = sanitizer.escape(username);
     room = sanitizer.escape(room);
 
@@ -105,6 +104,8 @@ io.of('/chat').on('connection', function (socket) {
         return;
       }
 
+      // TODO: Fix duplicate usernames
+      // put this in the if statement and throw an error
       socket.username = username;
       
       if (rooms[room].usernames.indexOf(username) === -1) {
@@ -118,9 +119,16 @@ io.of('/chat').on('connection', function (socket) {
     else {
       socket.emit('error', 'Invalid username: ' + username);
     }
-	});
+  });
 
-	socket.on('disconnect', function(){
+  socket.on('changelang', function (lang) {
+    lang = sanitizer.escape(lang);
+
+    // TODO: Should probably do some validation on this
+    io.of('/chat').in(socket.room).emit('updatelang', lang, socket.username);
+  });
+
+	socket.on('disconnect', function() {
     if (typeof rooms[socket.room] !== "undefined") {
       if (typeof rooms[socket.room].usernames !== "undefined") {
         delete rooms[socket.room].usernames[socket.username];
@@ -130,7 +138,7 @@ io.of('/chat').on('connection', function (socket) {
         delete rooms[socket.room];
       }
       else {
-        io.of('/chat').emit('updateusers', rooms[socket.room].usernames);
+        socket.broadcast.to(socket.room).emit('updateusers', rooms[socket.room].usernames);
         socket.broadcast.to(socket.room).emit('updatechat', 'SERVER', socket.username + ' has disconnected');
       }
     }
