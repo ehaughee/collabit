@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/ehaughee/collabit.png?label=ready)](https://waffle.io/ehaughee/collabit)  
 Collabit
 ========
 
