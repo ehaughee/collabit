@@ -110,15 +110,16 @@ io.of('/chat').on('connection', function (socket) {
         socket.username = username;
       }
       else {
-        socket.emit('error', 'Invalid username, already in use: ' + username);
+        socket.emit('adduserfail', 'Invalid username, already in use: ' + username);
       }
 
   		socket.emit('updatechat', 'SERVER', 'you have connected to room ' + socket.room);
+      socket.emit('addusersuccess');
   		socket.broadcast.to(socket.room).emit('updatechat', 'SERVER', username + ' has connected');
   		io.of('/chat').emit('updateusers', rooms[room].usernames);
     }
     else {
-      socket.emit('error', 'Invalid username: ' + username);
+      socket.emit('adduserfail', 'Invalid username: ' + username);
     }
   });
 

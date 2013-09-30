@@ -3,30 +3,28 @@ extends layout
 block content
   #editor
   include includes/chat
-  #overlay
+  #overlay 
+    label(for="input_uname") Please enter your name:
     //- TODO: Make this less ugly
-    p Please enter your name:
-      input#input_uname(type="text")
-      br
-      br
-      input#btn_cancel(type="button", value="Cancel")
-      input#btn_submit(type="button", value="Submit")
+    input#input_uname(type="text", name="input_uname")
+    br
+    br
+    input#btn_cancel(type="button", value="Cancel")
+    input#btn_submit(type="button", value="Submit")
+  img#img-load(src="/images/img-load.gif")
   script.
     usernames = [];
 
     $(function() {
       // Cache element selectors
       // ===============
-      $overlay = $("#overlay");
       $chat = $("#chat");
       $editor = $("#editor");
-      //- $img_load = $("#img-load");
+      $img_load = $("#img-load").remove();
       //- $btn_join = $("#btn_join");
       //- $chat_load_msg = $("#chat_load_msg");
       $messages = $("#messages");
-      $overlay_uname = $("#input_uname");
-      $overlay_submit = $("#btn_submit");
-      $overlay_cancel = $("#btn_cancel");
+      $overlay = $("#overlay").remove();
 
       // Event handlers
       // ==============
@@ -41,27 +39,6 @@ block content
         console.log("SOCKET: Leaving Collabit. Emitting 'userleft'");
         socket.emit("userleft");
       };
-
-      $overlay_submit.click(function () {
-        var name = validate_name($overlay_uname.val());
-        if (name !== false) {
-          socket.emit("adduser", name, document.URL.substr(-6));
-        }
-        else {
-          $.gritter.add({
-            title: "Error",
-            text: "Empty or invalid username.  Please try again.",
-            time: 6000,
-            sticky: false
-          });
-        }
-        return false;
-      });
-
-      $overlay_cancel.click(function () {
-        $.msg("unblock");
-        return false;
-      });
 
       // ACE Editor
       // ===============
@@ -90,15 +67,60 @@ block content
 
         $.msg({
           bgPath: '/vendor/jquery.msg/',
-          clickUnblock: false,
           autoUnblock: false,
-          content: $overlay.html()
+          clickUnblock: false,
+          content: $overlay.html(), // Remove our template and store the HTML
+          afterBlock: function () {
+            $("#btn_submit").click(function () {
+              var name = validate_name($("#input_uname").val());
+
+              $.msg("replace", $img_load[0].outerHTML);
+
+              if (name !== false) {
+                socket.emit("adduser", name, document.URL.substr(-6));
+              }
+              else {
+                $.msg("replace", $overlay.html());
+
+                $.gritter.add({
+                  title: "Error",
+                  text: "Empty, duplicate, or invalid username.  Please try again.",
+                  time: 6000,
+                  sticky: false
+                });
+              }
+              return false;
+            });
+
+            $("#btn_cancel").click(function () {
+              $.msg("unblock");
+              $.gritter.add({
+                title: "Collaboration Disabled",
+                text: "To enable collaboration, refresh the page and enter your name.",
+                time: 6000,
+                sticky: false
+              });
+              return false;
+            });
+          }
         });
       });
 
       socket.on("updatechat", function(username, message) {
         console.log("SOCKET: 'updatechat' emission detected.");
         write_chat_message(username, tokenize(message));
+      });
+
+      socket.on("addusersuccess", function () {
+        console.log("SOCKET: 'addusersuccess' emission detected.");
+        $.msg("unblock");
+      });
+
+      socket.on("adduserfail", function (message) {
+        $.msg({
+          method: "prependTo",
+          content: message
+        });
       });
 
       socket.on("updateusers", function(new_usernames) {
@@ -170,7 +192,7 @@ block content
 
       function tokenize(message) {
         // Links
-        var pat_link = /((http:\/\/)?\S+\.\S+)/ig;
+        var pat_link = /((((http(s)?|ftp):\/\/)|www\.)\S+\.\S{2,})/ig;
         var rep_link = '<a href="$1">$1</a>';
         message = message.replace(pat_link, rep_link);
 

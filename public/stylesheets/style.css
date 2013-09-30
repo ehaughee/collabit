@@ -54,10 +54,10 @@ body {
   text-align: center;
 }
 
-.chosen-container {
+/*.chosen-container {
   margin-top: 6px;
   margin-left: 6px;
-}
+}*/
 
 #header {
   position: absolute;
@@ -84,9 +84,10 @@ body {
   background: #eee;
   cursor: default;
 }
+
 /*
 #img-load {
-  position:absolute;
+  display: none;
 }
 
 button#btn_join {
