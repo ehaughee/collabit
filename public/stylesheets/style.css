@@ -80,11 +80,11 @@ body {
 }
 
 #overlay {
-  display: ;
-  position: absolute;
+  display: none;
   background: #eee;
+  cursor: default;
 }
-
+/*
 #img-load {
   position:absolute;
 }
@@ -92,4 +92,4 @@ body {
 button#btn_join {
   display: none;
   position: absolute;
-}
+}*/

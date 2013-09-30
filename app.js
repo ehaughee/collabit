@@ -32,35 +32,32 @@ var rooms = {};
  * Routes
  */
 
-app.get('/testing', function () {
-  res.send("TESTING");
-});
-
 app.get('/', function (req, res) {
-  var session = "";
+  var room = "";
 
   do {
-    session = makeid();
-  } while (typeof rooms[session] !== "undefined");
+    room = makeid();
+  } while (typeof rooms[room] !== "undefined");
 
-  rooms[session] = { usernames: [] };
+  rooms[room] = { usernames: [] };
 
-  res.redirect("/" + session);
+  res.redirect("/" + room);
 });
 
-app.get('/:id([A-Za-z0-9]{6})', function (req, res) {
-  var session = sanitizer.escape(req.params.id);
+app.get('/:room([A-Za-z0-9]{6})', function (req, res) {
+  var room = sanitizer.escape(req.params.room);
 
-  if (typeof rooms[session] === "undefined") {
-    rooms[session] = { usernames: [] };
+  if (typeof rooms[room] === "undefined") {
+    rooms[room] = { usernames: [] };
   }
 
-  res.render('session', { title: 'Collabit', session: session });
+  res.render('session', { title: 'Collabit', room: room });
 });
 
 var server = http.createServer(app).listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));
 });
+
 
 /**
  * ShareJS Code

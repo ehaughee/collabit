@@ -4,14 +4,64 @@ block content
   #editor
   include includes/chat
   #overlay
-    span#chat_load_msg
-    //- TODO: Make this a less ugly loader
-    img#img-load(src='/images/img-load.gif')
-  button#btn_join Join Chat  
+    //- TODO: Make this less ugly
+    p Please enter your name:
+      input#input_uname(type="text")
+      br
+      br
+      input#btn_cancel(type="button", value="Cancel")
+      input#btn_submit(type="button", value="Submit")
   script.
     usernames = [];
 
     $(function() {
+      // Cache element selectors
+      // ===============
+      $overlay = $("#overlay");
+      $chat = $("#chat");
+      $editor = $("#editor");
+      //- $img_load = $("#img-load");
+      //- $btn_join = $("#btn_join");
+      //- $chat_load_msg = $("#chat_load_msg");
+      $messages = $("#messages");
+      $overlay_uname = $("#input_uname");
+      $overlay_submit = $("#btn_submit");
+      $overlay_cancel = $("#btn_cancel");
+
+      // Event handlers
+      // ==============
+      $("textarea#message").keypress(function(e) {
+        if(e.which == 13) {
+          send_chat();
+          return false;
+        }
+      });
+
+      window.onbeforeunload = function () {
+        console.log("SOCKET: Leaving Collabit. Emitting 'userleft'");
+        socket.emit("userleft");
+      };
+
+      $overlay_submit.click(function () {
+        var name = validate_name($overlay_uname.val());
+        if (name !== false) {
+          socket.emit("adduser", name, document.URL.substr(-6));
+        }
+        else {
+          $.gritter.add({
+            title: "Error",
+            text: "Empty or invalid username.  Please try again.",
+            time: 6000,
+            sticky: false
+          });
+        }
+        return false;
+      });
+
+      $overlay_cancel.click(function () {
+        $.msg("unblock");
+        return false;
+      });
 
       // ACE Editor
       // ===============
@@ -25,34 +75,9 @@ block content
       //-     editor.setTheme("ace/theme/" + this.value);
       //-   });
 
-      // Loading overlay
-      // ===============
-      $chat = $("#chat"); // CHANGE it to the table's id you have <- what the hell was I talking about.
-      $editor = $("#editor");
-      $overlay = $("#overlay");
-      $img_load = $("#img-load");
-      $btn_join = $("#btn_join");
-      $chat_load_msg = $("#chat_load_msg");
-      $messages = $('#messages');
-
-      $overlay.css({
-        opacity : 0.5,
-        top     : $chat.offset().top,
-        left    : $chat.offset().left,
-        height  : $chat.outerHeight(),
-        width   : $chat.outerWidth()
-      });
-
-      $img_load.css({
-        top  : ($chat.height() / 2) - ($img_load.outerHeight() / 2),
-        left : ($chat.width() / 2) - ($img_load.outerWidth() / 2)
-      });
-
-      $overlay.fadeIn();
-
       // Share.JS
       // ==============
-      sharejs.open('#{session}', 'text', function(error, doc) {
+      sharejs.open("#{room}", 'text', function(error, doc) {
         doc.attach_ace(editor);
       });
 
@@ -60,30 +85,35 @@ block content
       // ==============
       var socket = io.connect("http://" + document.domain + "/chat");
 
-      socket.on('connect', function() {
-        console.log("SOCKET: Connection detected.  Emitting 'adduser'");
-        connect();
+      socket.on("connect", function() {
+        console.log("SOCKET: Connection detected.");
+
+        $.msg({
+          bgPath: '/vendor/jquery.msg/',
+          clickUnblock: false,
+          autoUnblock: false,
+          content: $overlay.html()
+        });
       });
 
-      socket.on('updatechat', function(username, message) {
-        console.log('SOCKET: \'updatechat\' emission detected.');
+      socket.on("updatechat", function(username, message) {
+        console.log("SOCKET: 'updatechat' emission detected.");
         write_chat_message(username, tokenize(message));
-        //- var elem = document.getElementById('messages');
       });
 
-      socket.on('updateusers', function(new_usernames) {
-        console.log('SOCKET: updateusers [' + new_usernames.join(", ") + ']');
+      socket.on("updateusers", function(new_usernames) {
+        console.log("SOCKET: updateusers [" + new_usernames.join(", ") + "]");
         usernames = new_usernames;
       });
 
-      socket.on('updatelang', function(lang, username) {
+      socket.on("updatelang", function(lang, username) {
         console.log("SOCKET: updatelang detected. Language changed to " + lang + " by " + username);
         // TODO: Should probably do some validation on this
         $("select#mode").val(lang).trigger("chosen:updated");
         write_chat_message("SERVER", username + " changed the language to " + lang);
       });
 
-      socket.on('error', function(message) {
+      socket.on("error", function(message) {
         console.log('ERROR: ' + message);
 
         $.gritter.add({
@@ -93,29 +123,21 @@ block content
         });
       });
 
-      function connect() {
-        var name = get_username();
-        if (name !== false) {
-          socket.emit('adduser', name, document.URL.substr(-6));
-          $('textarea#message').removeAttr('disabled');
-          $overlay.fadeOut();
-        }
-        else {
-          $img_load.hide();
-          $btn_join.css({
-            top  : ($chat.height() / 2) - ($btn_join.outerHeight() / 2),
-            left : $editor.width() + ($chat.width() / 2) - ($btn_join.outerWidth() / 2),
-            display: "inline"
-          });
-
-          $.gritter.add({
-            title: "Error",
-            text: "Empty or invalid username.  Please click Join Chat to try again.",
-            time: 6000,
-            sticky: false
-          });
-        }
-      }
+      //- function connect() {
+      //-   var name = get_username();
+      //-   if (name !== false) {
+      //-     socket.emit('adduser', name, document.URL.substr(-6));
+      //-     $('textarea#message').removeAttr('disabled');
+      //-   }
+      //-   else {
+      //-     $.gritter.add({
+      //-       title: "Error",
+      //-       text: "Empty or invalid username.  Please click Join Chat to try again.",
+      //-       time: 6000,
+      //-       sticky: false
+      //-     });
+      //-   }
+      //- }
 
       function write_chat_message(username, message) {
         $messages.append('<b>' + username + ':</b> ' + message + '<br>');
@@ -127,16 +149,17 @@ block content
         var message = messageBox.val();
         if (message !== "") {
           messageBox.val('');
-          console.log('SOCKET: Send chat command detected.  Emitting \'sendchat\'');
+          console.log("SOCKET: Send chat command detected.  Emitting 'sendchat'");
           socket.emit('sendchat', message);
         }
       }
 
-      function get_username() {
-        var name = prompt('What is your name?');
-        if (name !== "" && name !== null && 
-            !name.match(/server/i) && 
-            usernames.indexOf(name) === -1) {
+      function validate_name(name) {
+        if (typeof name !== "undefined"
+            && name !== "" 
+            && name !== null 
+            && !name.match(/server/i)
+            && usernames.indexOf(name) === -1) {
           
           return name;
         }
@@ -161,25 +184,5 @@ block content
           editor.getSession().setMode("ace/mode/" + this.value);
           socket.emit('changelang', this.value);
         });
-
-      // Event handlers
-      // ==============
-      $('textarea#message').keypress(function(e) {
-        if(e.which == 13) {
-          send_chat();
-          return false;
-        }
-      });
-
-      $('#btn_join').click(function() {
-        connect();
-      });
-
-      window.onbeforeunload = function () {
-        console.log('SOCKET: Closing/leaving collabit. Emitting \'userleft\'');
-        socket.emit('userleft');
-      };
-
-
 
     });

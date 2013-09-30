@@ -1,0 +1,26 @@
+{
+  "name": "Collabit",
+  "version": "0.0.1",
+  "homepage": "https://github.com/ehaughee/collabit",
+  "authors": [
+    "Eric Haughee <ehaughee@gmail.com>"
+  ],
+  "description": "Collaborative text editor",
+  "main": "app.js",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "chosen": "https://github.com/harvesthq/chosen/releases/download/0.13.0/chosen_v0.13.0.zip",
+    "gritter": "~1.7.6",
+    "jquery": "~2.0.3",
+    "ace": "~1.1.1",
+    "socket.io-client": "~0.9.16"
+  }
+}
