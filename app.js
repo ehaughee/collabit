@@ -1,7 +1,6 @@
 /**
  * Module dependencies.
  */
-
 var express = require('express')
   , sharejs = require('share').server
   , socket  = require('socket.io')
@@ -32,6 +31,10 @@ var rooms = {};
 /**
  * Routes
  */
+
+app.get('/testing', function () {
+  res.send("TESTING");
+});
 
 app.get('/', function (req, res) {
   var session = "";
@@ -101,15 +104,16 @@ io.of('/chat').on('connection', function (socket) {
       }
       else {
         socket.emit('error', 'Invalid room: ' + room);
+        socket.disconnect();
         return;
       }
 
-      // TODO: Fix duplicate usernames
-      // put this in the if statement and throw an error
-      socket.username = username;
-      
       if (rooms[room].usernames.indexOf(username) === -1) {
       	rooms[room].usernames.push(username);
+        socket.username = username;
+      }
+      else {
+        socket.emit('error', 'Invalid username, already in use: ' + username);
       }
 
   		socket.emit('updatechat', 'SERVER', 'you have connected to room ' + socket.room);
@@ -128,20 +132,50 @@ io.of('/chat').on('connection', function (socket) {
     io.of('/chat').in(socket.room).emit('updatelang', lang, socket.username);
   });
 
+  socket.on('userleft', function () {
+    console.log("SOCKET: userleft detected");
+    socket.disconnect();
+  });
+
 	socket.on('disconnect', function() {
-    if (typeof rooms[socket.room] !== "undefined") {
-      if (typeof rooms[socket.room].usernames !== "undefined") {
-        delete rooms[socket.room].usernames[socket.username];
-      }
-      if (rooms[socket.room].usernames.length === 0) {
-        console.log("Deleting empty room: " + rooms[socket.room]);
-        delete rooms[socket.room];
-      }
-      else {
-        socket.broadcast.to(socket.room).emit('updateusers', rooms[socket.room].usernames);
-        socket.broadcast.to(socket.room).emit('updatechat', 'SERVER', socket.username + ' has disconnected');
-      }
-    }
+    console.log("SOCKET: disconnect detected");
+    disconnect(socket);
 	});
 });
 
+function disconnect(socket) {
+  if (typeof rooms[socket.room] !== "undefined") {
+    if (typeof rooms[socket.room].usernames !== "undefined") {
+      console.log("Deleting user: " + socket.username);
+      var temp = RemoveFromArray(socket.username, rooms[socket.room].usernames);
+      if (temp === false) {
+        console.log('ERROR: Failed to remove: ' + username);
+      }
+    }
+    if (rooms[socket.room].usernames.length === 0) {
+      console.log("Deleting empty room: " + socket.room);
+      delete rooms[socket.room];
+    }
+    else {
+      socket.broadcast.to(socket.room).emit('updateusers', rooms[socket.room].usernames);
+      socket.broadcast.to(socket.room).emit('updatechat', 'SERVER', socket.username + ' has disconnected');
+    }
+  }
+}
+
+function RemoveFromArray(obj, array) {
+  if (array.indexOf) {
+    var index = array.indexOf(obj);
+    if (index !== -1) {
+      return array.splice(index, 1);
+    }
+    else {
+      console.log("Object does not exist in array");
+    }
+  }
+  else {
+    console.log("Array.indexOf does not exist.  Unsupported browser.");
+  }
+
+  return false;
+}
