@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 var cmd = require("child_process").exec;
 cmd("cd public && bower install", 
   function (error, stdout) {
