@@ -24,7 +24,7 @@ block content
       //- $btn_join = $("#btn_join");
       //- $chat_load_msg = $("#chat_load_msg");
       $messages = $("#messages");
-      $overlay = $("#overlay").remove();
+      $overlay = $("#overlay");
 
       // Event handlers
       // ==============
@@ -65,44 +65,39 @@ block content
       socket.on("connect", function() {
         console.log("SOCKET: Connection detected.");
 
-        $.msg({
-          bgPath: '/vendor/jquery.msg/',
-          autoUnblock: false,
-          clickUnblock: false,
-          content: $overlay.html(), // Remove our template and store the HTML
-          afterBlock: function () {
-            $("#btn_submit").click(function () {
-              var name = validate_name($("#input_uname").val());
+        $.blockUI({
+          message: $overlay
+        });
+        
+        $("#btn_submit").click(function () {
+          var name = validate_name($("#input_uname").val());
 
-              $.msg("replace", $img_load[0].outerHTML);
-
-              if (name !== false) {
-                socket.emit("adduser", name, document.URL.substr(-6));
-              }
-              else {
-                $.msg("replace", $overlay.html());
-
-                $.gritter.add({
-                  title: "Error",
-                  text: "Empty, duplicate, or invalid username.  Please try again.",
-                  time: 6000,
-                  sticky: false
-                });
-              }
-              return false;
-            });
-
-            $("#btn_cancel").click(function () {
-              $.msg("unblock");
-              $.gritter.add({
-                title: "Collaboration Disabled",
-                text: "To enable collaboration, refresh the page and enter your name.",
-                time: 6000,
-                sticky: false
-              });
-              return false;
+          if (name !== false) {
+            socket.emit("adduser", name, document.URL.substr(-6));
+            $.blockUI({
+              message: $img_load
             });
           }
+          else {
+            $.gritter.add({
+              title: "Error",
+              text: "Empty, duplicate, or invalid username.  Please try again.",
+              time: 6000,
+              sticky: false
+            });
+          }
+          return false;
+        });
+
+        $("#btn_cancel").click(function () {
+          $.unblockUI();
+          $.gritter.add({
+            title: "Collaboration Disabled",
+            text: "To enable collaboration, refresh the page and enter your name.",
+            time: 6000,
+            sticky: false
+          });
+          return false;
         });
       });
 
@@ -113,13 +108,19 @@ block content
 
       socket.on("addusersuccess", function () {
         console.log("SOCKET: 'addusersuccess' emission detected.");
-        $.msg("unblock");
+        $.unblockUI();
       });
 
       socket.on("adduserfail", function (message) {
-        $.msg({
-          method: "prependTo",
-          content: message
+        $.blockUI({
+          message: $overlay
+        });
+        
+        $.gritter.add({
+          title: "Error",
+          text: message,
+          time: 6000,
+          sticky: false
         });
       });
 
