@@ -21,6 +21,7 @@ block content
       $chat = $("#chat");
       $editor = $("#editor");
       $img_load = $("#img-load").remove();
+      $btn_submit = $("#btn_submit");
       //- $btn_join = $("#btn_join");
       //- $chat_load_msg = $("#chat_load_msg");
       $messages = $("#messages");
@@ -28,9 +29,16 @@ block content
 
       // Event handlers
       // ==============
-      $("textarea#message").keypress(function(e) {
+      $("#message").keypress(function (e) {
         if(e.which == 13) {
           send_chat();
+          return false;
+        }
+      });
+
+      $("#input_uname").keypress(function (e) {
+        if (e.which == 13) {
+          $btn_submit.click();
           return false;
         }
       });
@@ -115,7 +123,7 @@ block content
         $.blockUI({
           message: $overlay
         });
-        
+
         $.gritter.add({
           title: "Error",
           text: message,
