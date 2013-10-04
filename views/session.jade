@@ -27,6 +27,10 @@ block content
       $messages = $("#messages");
       $overlay = $("#overlay");
 
+      $.blockUI({
+        message: $img_load
+      });
+
       // Event handlers
       // ==============
       $("#message").keypress(function (e) {
@@ -145,7 +149,7 @@ block content
       });
 
       socket.on("error", function(message) {
-        console.log('ERROR: ' + message);
+        console.log('ERROR: ' + message.type);
 
         $.gritter.add({
           title: "Error",
@@ -153,22 +157,6 @@ block content
           sticky: true
         });
       });
-
-      //- function connect() {
-      //-   var name = get_username();
-      //-   if (name !== false) {
-      //-     socket.emit('adduser', name, document.URL.substr(-6));
-      //-     $('textarea#message').removeAttr('disabled');
-      //-   }
-      //-   else {
-      //-     $.gritter.add({
-      //-       title: "Error",
-      //-       text: "Empty or invalid username.  Please click Join Chat to try again.",
-      //-       time: 6000,
-      //-       sticky: false
-      //-     });
-      //-   }
-      //- }
 
       function write_chat_message(username, message) {
         $messages.append('<b>' + username + ':</b> ' + message + '<br>');

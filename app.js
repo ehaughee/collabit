@@ -172,7 +172,7 @@ function RemoveFromArray(obj, array) {
     }
   }
   else {
-    console.log("Array.indexOf does not exist.  Unsupported browser.");
+    console.log("Array.indexOf does not exist.  Unsupported function.");
   }
 
   return false;
