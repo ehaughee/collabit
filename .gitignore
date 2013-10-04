@@ -12,8 +12,6 @@ logs
 results
 
 npm-debug.log
-node_modules/*
-public/bower_components/*
 
 .DS_Store
 .idea/*
