@@ -8,7 +8,7 @@ cmd("cd ./public && bower install && ls ./bower_components/",
     else {
       console.log("stdout: " + stdout);
       console.log("stderr: " + stderr);
-      cmd("cd ./public/bower_components/ace && npm install && node Makefile.dryice.js",
+      cmd("cd ./public/bower_components/ace && npm install --production && node Makefile.dryice.js",
         function (error, stdout, stderr) {
           console.log("Build Ace");
           if (error !== null) {
