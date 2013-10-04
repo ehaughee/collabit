@@ -1,5 +1,5 @@
 var cmd = require("child_process").exec;
-cmd("cd public && pwd",//bower install", 
+cmd("cd ./public && bower install && ls ./bower_components/",
   function (error, stdout, stderr) {
     console.log("Bower dependencies");
     if (error !== null) {
@@ -8,7 +8,7 @@ cmd("cd public && pwd",//bower install",
     else {
       console.log("stdout: " + stdout);
       console.log("stderr: " + stderr);
-      cmd("cd public/bower_components/ace && pwd",//npm install && node Makefile.dryice.js",
+      cmd("cd ./public/bower_components/ace && npm install && node Makefile.dryice.js",
         function (error, stdout, stderr) {
           console.log("Build Ace");
           if (error !== null) {
@@ -17,7 +17,7 @@ cmd("cd public && pwd",//bower install",
           else {
             console.log("stdout: " + stdout);
             console.log("stderr: " + stderr);
-            cmd("cd public/bower_components/socket.io-client && pwd",//npm install && make", 
+            cmd("cd ./public/bower_components/socket.io-client && npm install && make", 
               function (error, stdout, stderr) {
                 console.log("Build Socket.io-client");
                 if (error !== null) {
