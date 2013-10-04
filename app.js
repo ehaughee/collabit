@@ -100,7 +100,7 @@ io.of('/chat').on('connection', function (socket) {
         socket.room = room;
       }
       else {
-        socket.emit('error', 'Invalid room: ' + room);
+        socket.emit('exception', 'Invalid room: ' + room);
         socket.disconnect();
         return;
       }

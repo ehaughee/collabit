@@ -148,7 +148,7 @@ block content
         write_chat_message("SERVER", username + " changed the language to " + lang);
       });
 
-      socket.on("error", function(message) {
+      socket.on("exception", function(message) {
         console.log('ERROR: ' + message.type);
 
         $.gritter.add({
