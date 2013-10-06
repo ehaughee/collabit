@@ -17,7 +17,7 @@
     "tests"
   ],
   "dependencies": {
-    "chosen": "https://github.com/harvesthq/chosen/releases/download/0.13.0/chosen_v0.13.0.zip",
+    "chosen": "https://github.com/harvesthq/chosen/releases/download/1.0.0/chosen_v1.0.0.zip",
     "gritter": "~1.7.6",
     "jquery": "~2.0.3",
     "ace": "~1.1.1",
