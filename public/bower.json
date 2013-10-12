@@ -22,6 +22,7 @@
     "jquery": "~2.0.3",
     "ace": "~1.1.1",
     "socket.io-client": "~0.9.16",
-    "blockui": "*"
+    "blockui": "*",
+    "bootstrap": "~3.0.0"
   }
 }

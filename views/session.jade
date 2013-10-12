@@ -3,15 +3,19 @@ extends layout
 block content
   #editor
   include includes/chat
-  #overlay 
-    label(for="input_uname") Please enter your name:
-    //- TODO: Make this less ugly
-    input#input_uname(type="text", name="input_uname")
-    br
-    br
-    input#btn_cancel(type="button", value="Cancel")
-    input#btn_submit(type="button", value="Submit")
-  img#img-load(src="/images/img-load.gif")
+  #overlay.panel.panel-default
+    .panel-heading Please enter your name
+    .panel-body
+      input#input_uname.form-control(type="text", name="input_uname", placeholder="Enter your name")
+      br
+      br
+      button#btn_cancel.btn.btn-default.pull-left(type="button", value="Cancel") Cancel
+      button#btn_submit.btn.btn-info.pull-right(type="button", value="Submit") Submit
+  #img-load
+    .panel.panel-default
+      .panel-heading Loading
+      .panel-body
+        img(src="/images/img-load.gif")
   script.
     usernames = [];
 
@@ -22,14 +26,12 @@ block content
       $editor = $("#editor");
       $img_load = $("#img-load").remove();
       $btn_submit = $("#btn_submit");
-      //- $btn_join = $("#btn_join");
-      //- $chat_load_msg = $("#chat_load_msg");
       $messages = $("#messages");
       $overlay = $("#overlay");
+      $selectMode = $("select#mode");
+      $selectTheme = $("select#theme");
 
-      $.blockUI({
-        message: $img_load
-      });
+      blockui($img_load);
 
       // Event handlers
       // ==============
@@ -59,11 +61,6 @@ block content
       editor.setTheme("ace/theme/monokai");
       editor.getSession().setMode("ace/mode/javascript");
 
-      //- $("select#theme").chosen({ width: "180px" })
-      //-   .on('change', function() {
-      //-     editor.setTheme("ace/theme/" + this.value);
-      //-   });
-
       // Share.JS
       // ==============
       sharejs.open("#{room}", 'text', function(error, doc) {
@@ -77,18 +74,14 @@ block content
       socket.on("connect", function() {
         console.log("SOCKET: Connection detected.");
 
-        $.blockUI({
-          message: $overlay
-        });
+        blockui($overlay);
         
         $("#btn_submit").click(function () {
           var name = validate_name($("#input_uname").val());
 
           if (name !== false) {
             socket.emit("adduser", name, document.URL.substr(-6));
-            $.blockUI({
-              message: $img_load
-            });
+            blockui($img_load);
           }
           else {
             $.gritter.add({
@@ -102,12 +95,18 @@ block content
         });
 
         $("#btn_cancel").click(function () {
+          $messages.prop("disabled", "true");
+          socket.disconnect();
           $.unblockUI();
           $.gritter.add({
             title: "Collaboration Disabled",
-            text: "To enable collaboration, refresh the page and enter your name.",
-            time: 6000,
-            sticky: false
+            text: "To enable collaboration refresh the page and enter your name.",
+            sticky: true//-,
+            //- after_open: function(elem) {
+            //-   elem.click(function () {
+            //-     location.reload();
+            //-   });
+            //- }
           });
           return false;
         });
@@ -124,9 +123,7 @@ block content
       });
 
       socket.on("adduserfail", function (message) {
-        $.blockUI({
-          message: $overlay
-        });
+        blockui($overlay);
 
         $.gritter.add({
           title: "Error",
@@ -196,12 +193,35 @@ block content
         return message;
       }
 
+      function blockui(content) {
+        //- $.blockUI.defaults.css = {};
+        $.blockUI({
+          message: content,
+          css: {
+            border: '',
+            backgroundColor: '',
+            cursor: 'default',
+            textAlign: ''
+          }
+        });
+      }
+
       // Chosen
       // ===============
-      $("select#mode").chosen({ width: "180px" })
+      $selectMode.chosen({ 
+          width: "180px",
+          search_contains: true,
+
+        })
         .on('change', function () {
           editor.getSession().setMode("ace/mode/" + this.value);
           socket.emit('changelang', this.value);
-        });
+        }
+      );
 
+      //- $selectTheme.chosen({ width: "180px" })
+      //-   .on('change', function() {
+      //-     editor.setTheme("ace/theme/" + this.value);
+      //-   }
+      //- );
     });

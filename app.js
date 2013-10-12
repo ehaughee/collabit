@@ -108,15 +108,15 @@ io.of('/chat').on('connection', function (socket) {
       if (rooms[room].usernames.indexOf(username) === -1) {
       	rooms[room].usernames.push(username);
         socket.username = username;
+
+        socket.emit('updatechat', 'SERVER', 'you have connected to room ' + socket.room);
+        socket.emit('addusersuccess');
+        socket.broadcast.to(socket.room).emit('updatechat', 'SERVER', username + ' has connected');
+        io.of('/chat').emit('updateusers', rooms[room].usernames);
       }
       else {
         socket.emit('adduserfail', 'Invalid username, already in use: ' + username);
       }
-
-  		socket.emit('updatechat', 'SERVER', 'you have connected to room ' + socket.room);
-      socket.emit('addusersuccess');
-  		socket.broadcast.to(socket.room).emit('updatechat', 'SERVER', username + ' has connected');
-  		io.of('/chat').emit('updateusers', rooms[room].usernames);
     }
     else {
       socket.emit('adduserfail', 'Invalid username: ' + username);
@@ -146,7 +146,7 @@ function disconnect(socket) {
     if (typeof rooms[socket.room].usernames !== "undefined") {
       console.log("Deleting user: " + socket.username);
       var temp = RemoveFromArray(socket.username, rooms[socket.room].usernames);
-      if (temp === false) {
+      if (temp === false && typeof username !== "undefined") {
         console.log('ERROR: Failed to remove: ' + username);
       }
     }

@@ -5,7 +5,7 @@ body {
 
 #editor { 
   position: absolute;
-  top: 40px;
+  top: 51px;
   right: 0; 
   bottom: 0;
   left: 0;
@@ -14,7 +14,7 @@ body {
 
 #chat {
   position: absolute;
-  top: 40px;
+  top: 51px;
   right: 0;
   bottom: 0;
   
@@ -45,6 +45,9 @@ body {
   -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
   -moz-box-sizing: border-box;    /* Firefox, other Gecko */
   box-sizing: border-box;         /* Opera/IE 8+ */
+  -webkit-border-radius: 0 !important;
+  -moz-border-radius: 0 !important;
+  border-radius: 0 !important;
   width: 100%;
   height: 100%;
   padding-top: -2px;
@@ -53,12 +56,16 @@ body {
 #chat_load_msg {
   text-align: center;
 }
+/*
+.chosen-container {
+  margin-top: 5px;
+}
 
-/*.chosen-container {
-  margin-top: 6px;
-  margin-left: 6px;
-}*/
-
+.chosen-container-single {
+  height: 25px;
+}
+*/
+/*
 #header {
   position: absolute;
   top: 0;
@@ -67,23 +74,18 @@ body {
   height: 40px;
   width: 100%;
   background-color: black;
-  /*color: white;*/
+  color: white;
 }
 
 #header label {
   margin-top: 2px;
   color: white;
-}
-
-#header #btn_login {
-  float: right;
-}
+}*/
 
 #overlay {
   display: none;
-  background: #eee;
-  cursor: default;
 }
+
 
 /*
 #img-load {
