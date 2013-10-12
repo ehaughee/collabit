@@ -28,7 +28,8 @@ body {
   height: 90%;
   width: 100%;
   padding-left: 3px;
-  overflow: scroll;
+  overflow-y: scroll;
+  overflow-x: auto;
   /*border-bottom: black solid 2px;*/
 }
 
