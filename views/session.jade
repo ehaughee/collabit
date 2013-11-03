@@ -63,12 +63,6 @@ block content
       editor.setTheme("ace/theme/monokai");
       editor.getSession().setMode("ace/mode/javascript");
 
-      // Share.JS
-      // ==============
-      sharejs.open("#{room}", 'text', function(error, doc) {
-        doc.attach_ace(editor);
-      });
-
       // Socket.IO
       // ==============
       var socket = io.connect("http://" + document.domain + "/chat");
@@ -122,6 +116,12 @@ block content
       socket.on("addusersuccess", function () {
         console.log("SOCKET: 'addusersuccess' emission detected.");
         $.unblockUI();
+
+        // Share.JS
+        // ==============
+        sharejs.open("#{room}", 'text', function(error, doc) {
+          doc.attach_ace(editor);
+        });
       });
 
       socket.on("adduserfail", function (message) {
