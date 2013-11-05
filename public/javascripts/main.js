@@ -94,13 +94,13 @@ $(function() {
   });
 
   // [SOCKET] ADD USER SUCCESS
-  socket.on("addusersuccess", function () {
+  socket.on("addusersuccess", function (room) {
     console.log("SOCKET: 'addusersuccess' emission detected.");
     $.unblockUI();
 
     // Share.JS
     // ========================================================
-    sharejs.open("#{room}", 'text', function(error, doc) {
+    sharejs.open(room, 'text', function(error, doc) {
       doc.attach_ace(editor);
     });
   });
@@ -156,7 +156,7 @@ $(function() {
 
   function write_chat_message(username, message) {
     $messages.append('<b>' + username + ':</b> ' + message + '<br>');
-    $messages.scrollTop = $messages.scrollHeight;
+    $messages[0].scrollTop = $messages[0].scrollHeight;
   }
   
   function send_chat() {
