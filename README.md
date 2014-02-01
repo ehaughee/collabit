@@ -19,7 +19,6 @@ Demo: http://collabit.herokuapp.com
 6. `cd public/bower_components/ace`
 7. `npm install`
 8. `node ./Makefile.dryice.js`
-9. `cd 
 9. `node app.js`
 10. Navigate to http://localhost:4000
 
