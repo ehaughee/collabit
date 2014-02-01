@@ -11,16 +11,16 @@ Demo: http://collabit.herokuapp.com
 
 ### *nix Install (draft)
 
-1. `brew/apt-get install node`
-2. `brew/apt-get install npm`
+1. `brew/apt-get install node npm`
 3. `git clone https://github.com/ehaughee/collabit.git`
-4. `npm install`
-5. `bower install`
-6. `cd public/bower_components/ace`
-7. `npm install`
-8. `node ./Makefile.dryice.js`
-9. `node app.js`
-10. Navigate to http://localhost:4000
+4. `cd collabit`
+5. `npm install`
+6. `bower install`
+7. `cd public/bower_components/ace`
+8. `npm install`
+9. `node ./Makefile.dryice.js`
+10. `node app.js`
+11. Navigate to http://localhost:4000
 
 ### Windows Install (draft)
 
