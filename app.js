@@ -6,8 +6,7 @@ var express = require('express')
   , socket  = require('socket.io')
   , http = require('http')
   , path = require('path')
-  , sanitizer = require('sanitizer')
-  , Firebase = require("firebase");
+  , sanitizer = require('sanitizer');
 
 var app = express();
 
