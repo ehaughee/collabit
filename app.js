@@ -6,7 +6,8 @@ var express = require('express')
   , socket  = require('socket.io')
   , http = require('http')
   , path = require('path')
-  , sanitizer = require('sanitizer');
+  , sanitizer = require('sanitizer')
+  , Firebase = require("firebase");
 
 var app = express();
 
@@ -27,6 +28,7 @@ app.configure('development', function(){
 });
 
 var rooms = {};
+
 
 /**
  * Routes
@@ -76,6 +78,7 @@ function makeid() {
 
   return text.join("");
 }
+
 
 /**
  * Socket.IO Code
