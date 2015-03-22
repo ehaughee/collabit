@@ -6,12 +6,12 @@
     "start": "node app"
   },
   "dependencies": {
+    "bower": "*",
     "express": "3.4.0",
     "jade": "*",
-    "socket.io": "~0.9.16",
-    "share": "~0.6.2",
+    "npm": "*",
     "sanitizer": "0.0.15",
-    "bower": "*",
-    "npm": "*"
+    "share": "~0.6.2",
+    "socket.io": "~0.9.16"
   }
 }

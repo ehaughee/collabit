@@ -6,7 +6,8 @@ var express = require('express')
   , socket  = require('socket.io')
   , http = require('http')
   , path = require('path')
-  , sanitizer = require('sanitizer');
+  , sanitizer = require('sanitizer')
+  , Firebase = require("firebase");
 
 var app = express();
 
@@ -27,6 +28,7 @@ app.configure('development', function(){
 });
 
 var rooms = {};
+
 
 /**
  * Routes
@@ -77,6 +79,7 @@ function makeid() {
   return text.join("");
 }
 
+
 /**
  * Socket.IO Code
  */
@@ -110,7 +113,7 @@ io.of('/chat').on('connection', function (socket) {
         socket.username = username;
 
         socket.emit('updatechat', 'SERVER', 'you have connected to room ' + socket.room);
-        socket.emit('addusersuccess');
+        socket.emit('addusersuccess', room);
         socket.broadcast.to(socket.room).emit('updatechat', 'SERVER', username + ' has connected');
         io.of('/chat').emit('updateusers', rooms[room].usernames);
       }
