@@ -2,6 +2,9 @@
  * Module dependencies.
  */
 var express = require('express')
+  , logger = require('morgan')
+  , methodOverride = require('method-override')
+  , bodyParser = require('body-parser')
   , sharejs = require('share').server
   , socket  = require('socket.io')
   , http = require('http')
@@ -10,21 +13,18 @@ var express = require('express')
 
 var app = express();
 
-app.configure(function() {
-  app.set('port', process.env.PORT || 4000);
-  app.set('views', __dirname + '/views');
-  app.set('view engine', 'jade');
-  app.use(express.favicon());
-  app.use(express.logger('dev'));
-  app.use(express.bodyParser());
-  app.use(express.methodOverride());
-  app.use(app.router);
-  app.use(express.static(path.join(__dirname, 'public')));
-});
+app.set('port', process.env.PORT || 4000);
+app.set('views', __dirname + '/views');
+app.set('view engine', 'jade');
+//app.use(express.favicon());
+app.use(logger('dev'));
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(methodOverride());
+app.use(express.static(path.join(__dirname, 'public')));
 
-app.configure('development', function(){
+if ('production' == app.get('env')) {
   app.use(express.errorHandler());
-});
+}
 
 var rooms = {};
 
