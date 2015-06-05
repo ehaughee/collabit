@@ -20,9 +20,9 @@
     "chosen": "~1.4.2",
     "gritter": "~1.8.1",
     "jquery": "~2.1.4",
-    "ace": "~1.1.9",
     "blockui": "*",
     "bootstrap": "~3.3.4",
-    "socket.io-client": "~0.9.16"
+    "socket.io-client": "~0.9.16",
+    "ace-builds": "~1.1.9"
   }
 }
