@@ -82,7 +82,13 @@ $(function() {
 
   // [SOCKET] UPDATE USERS
   socket.on("updateusers", function(new_usernames) {
-    console.log("SOCKET: updateusers [" + new_usernames.join(", ") + "]");
+    var usersList = new_usernames.join(", ");
+    
+    // Update users list
+    $chat.find("#user-list #users").text(usersList);
+    
+    // Logging
+    console.log("SOCKET: updateusers [" + usersList + "]");
     usernames = new_usernames;
   });
 
