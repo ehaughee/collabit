@@ -16,13 +16,10 @@ Demo: http://collabit.herokuapp.com
 4. `cd collabit`
 5. `npm install`
 6. `bower install`
-7. `cd public/bower_components/ace`
-8. `npm install`
-9. `node ./Makefile.dryice.js`
-10. `node app.js`
-11. Navigate to http://localhost:4000
+7. `node app.js`
+8. Navigate to http://localhost:4000
 
-### Windows Install (draft)
+### Windows Install (draft) -- This is not up to date
 
 1. Install Node: http://nodejs.org/download/
 2. Install NPM: https://npmjs.org/doc/README.html#Fancy-Windows-Install

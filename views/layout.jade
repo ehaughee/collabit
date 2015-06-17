@@ -1,4 +1,4 @@
-doctype 5
+doctype html
 html
   head
     title= title
@@ -9,7 +9,7 @@ html
     link(rel='stylesheet', href='/stylesheets/style.css')
 
     //- script(src="/bower_components/requirejs/require.js")
-    script(src="/bower_components/jquery/jquery.min.js")
+    script(src="/bower_components/jquery/dist/jquery.min.js")
     script(src="/bower_components/bootstrap/dist/js/bootstrap.min.js")
     script(src="/bower_components/chosen/chosen.jquery.min.js")
     script(src="/bower_components/gritter/js/jquery.gritter.min.js")
@@ -17,7 +17,7 @@ html
     .container
       include includes/header
       block content
-    script(src="/bower_components/ace/build/src/ace.js")
+    script(src="/bower_components/ace-builds/src-min/ace.js")
     script(src="/bower_components/socket.io-client/dist/socket.io.js")
     script(src="/vendor/share.js/bcsocket.js")
     script(src="/vendor/share.js/share.js")
