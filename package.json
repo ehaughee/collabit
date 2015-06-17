@@ -3,14 +3,17 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "node app"
+    "start": "node app",
+    "postinstall": "node node_modules/bower/bin/bower install"
   },
   "dependencies": {
-    "bower": "*",
-    "express": "3.4.0",
-    "jade": "*",
-    "npm": "*",
-    "sanitizer": "0.0.15",
+    "body-parser": "^1.12.4",
+    "bower": "^1.4.1",
+    "express": "^4.12.4",
+    "jade": "^1.10.0",
+    "method-override": "^2.3.3",
+    "morgan": "^1.5.3",
+    "sanitizer": "^0.1.2",
     "share": "~0.6.2",
     "socket.io": "~0.9.16"
   }

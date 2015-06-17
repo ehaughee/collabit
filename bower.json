@@ -17,12 +17,12 @@
     "tests"
   ],
   "dependencies": {
-    "chosen": "https://github.com/harvesthq/chosen/releases/download/1.0.0/chosen_v1.0.0.zip",
-    "gritter": "~1.7.6",
-    "jquery": "~2.0.3",
-    "ace": "~1.1.1",
-    "socket.io-client": "~0.9.16",
+    "chosen": "~1.4.2",
+    "gritter": "~1.8.1",
+    "jquery": "~2.1.4",
     "blockui": "*",
-    "bootstrap": "~3.0.0"
+    "bootstrap": "~3.3.4",
+    "socket.io-client": "~0.9.16",
+    "ace-builds": "~1.1.9"
   }
 }

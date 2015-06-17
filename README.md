@@ -9,18 +9,14 @@ Demo: http://collabit.herokuapp.com
 ![collabit connecting screenshot](http://f.cl.ly/items/280C3U2O0b3X2h1T172v/Screen%20Shot%202013-10-16%20at%208.41.23%20PM.png)
 ![collabit connected screenshot](http://f.cl.ly/items/003l0S0H2e3h1r123u3K/Screen%20Shot%202013-10-16%20at%208.42.18%20PM.png)
 
-### *nix Install (draft)
+### *nix Install
 
 1. `brew/apt-get install node npm`
 3. `git clone https://github.com/ehaughee/collabit.git`
 4. `cd collabit`
 5. `npm install`
-6. `bower install`
-7. `cd public/bower_components/ace`
-8. `npm install`
-9. `node ./Makefile.dryice.js`
-10. `node app.js`
-11. Navigate to http://localhost:4000
+7. `node app.js`
+8. Navigate to http://localhost:4000
 
 ### Windows Install (draft)
 
@@ -35,11 +31,5 @@ Demo: http://collabit.herokuapp.com
 7. `git clone https://github.com/ehaughee/collabit.git`
 8. `cd collabit`
 9. `npm install`
-10. `bower install`
-11. `cd collabit\public\bower_components\ace`
-12. `npm install`
-13. `node .\Makefile.dryice.js`
-14. `node app.js`
-15. `cd collabit\public\bower_components\socket.io-client\`
-16. `npm install`
-15. Navigate to http://localhost:4000
+10. `node app.js`
+11. Navigate to http://localhost:4000
