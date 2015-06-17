@@ -163,7 +163,11 @@ $(function() {
     var line = this.dataset.line.substr(1) / 1;
 
     if (Number.isInteger(line) && line < session.getLength()) {
-      editor.selection.moveCursorTo(line - 1, 0, false);
+      // Move to clicked line
+      editor.gotoLine(line, 0, true);
+      
+      // Focus on the text editor
+      editor.focus();
     }
 
     e.preventDefault();
