@@ -110,6 +110,9 @@ $(function() {
     sharejs.open(room, 'text', function(error, doc) {
       doc.attach_ace(editor);
     });
+    
+    // Focus on the editor so the user can start typing as soon as they join.
+    editor.focus();
   });
 
   // [SOCKET] ADD USER FAIL
