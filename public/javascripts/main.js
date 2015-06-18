@@ -2,7 +2,7 @@ var usernames = [];
 
 $(function() {
   // Cache element selectors
-  // ===============
+  // =========================================================
   $chat = $("#chat");
   $editor = $("#editor");
   $img_load = $("#img-load").remove();
@@ -43,8 +43,8 @@ $(function() {
 
     blockui($overlay);
 
-    $("#btn_submit").click(function () {
-      var name = validate_name($("#input_uname").val());
+    $btn_submit.click(function () {
+      var name = validate_name($("#input_uname").val().trim());
 
       if (name !== false) {
         socket.emit("adduser", name, document.URL.substr(-6));

@@ -94,10 +94,13 @@ io.of('/chat').on('connection', function (socket) {
   });
 
   socket.on('adduser', function(username, room){
-    username = sanitizer.escape(username);
+    username = sanitizer.escape(username).trim();
     room = sanitizer.escape(room);
 
-    if (username !== "" && !username.match(/server/i)) {
+    if (typeof username !== "undefined"
+        && username !== ""
+        && username !== null
+        && !username.match(/server/i)) {
       if (typeof room !== "undefined" && room.match(/[A-Za-z0-9]{6}/) && typeof rooms[room] !== "undefined") {
         socket.join(room);
         socket.room = room;
