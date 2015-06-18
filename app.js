@@ -23,7 +23,8 @@ app.use(methodOverride());
 app.use(express.static(path.join(__dirname, 'public')));
 
 if ('production' == app.get('env')) {
-  app.use(express.errorHandler());
+  var errorhandler = require('errorhandler');
+  app.use(errorhandler());
 }
 
 var rooms = {};
