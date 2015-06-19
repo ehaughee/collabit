@@ -1,3 +1,6 @@
+# Generated assets
+public/stylesheets
+
 lib-cov
 *.seed
 *.log

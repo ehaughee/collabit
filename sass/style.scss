@@ -1,0 +1,65 @@
+body {
+	padding: 50px;
+	font: 14px "Lucida Grande", "Helvetica", "Arial", "sans-serif";
+}
+
+#editor {
+	position: absolute;
+	top: 51px;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	width: 70%;
+}
+
+#chat {
+	position: absolute;
+	top: 51px;
+	right: 0;
+	bottom: 0;
+	width: 30%;
+
+	#user-list {
+		height: 10%;
+		width: 100%;
+		padding-left: 3px;
+		overflow: scroll;
+		border-bottom: 1px solid lightgrey;
+
+		#title {
+			font-weight: bold;
+		}
+	}
+
+	#messages {
+		height: 80%;
+		width: 100%;
+		padding-left: 3px;
+		overflow-y: scroll;
+		overflow-x: auto;
+	}
+
+	#messagebox {
+		position: absolute;
+		bottom: 0;
+		right: 0;
+		height: 10%;
+		width: 100%;
+	}
+
+	textarea#message {
+		box-sizing: border-box;
+		border-radius: 0;
+		width: 100%;
+		height: 100%;
+		padding-top: -2px;
+	}
+}
+
+#chat_load_msg {
+	text-align: center;
+}
+
+#overlay {
+	display: none;
+}

@@ -9,7 +9,8 @@ var express = require('express')
   , socket  = require('socket.io')
   , http = require('http')
   , path = require('path')
-  , sanitizer = require('sanitizer');
+  , sanitizer = require('sanitizer')
+  , sassMiddleware = require('node-sass-middleware');
 
 var app = express();
 
@@ -20,9 +21,23 @@ app.set('view engine', 'jade');
 app.use(logger('dev'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(methodOverride());
+
+var prodEnv = 'production' == app.get('env');
+
+// Sass
+app.use(sassMiddleware({
+  root: __dirname,
+  src: 'sass',
+  dest: path.join('public'),
+  debug: !prodEnv,
+  sourceMap: !prodEnv
+}));
+
+// Statics
 app.use(express.static(path.join(__dirname, 'public')));
 
-if ('production' == app.get('env')) {
+// Production specific middleware
+if (prodEnv) {
   var errorhandler = require('errorhandler');
   app.use(errorhandler());
 }
@@ -33,7 +48,6 @@ var rooms = {};
 /**
  * Routes
  */
-
 app.get('/', function (req, res) {
   var room = "";
 
@@ -64,7 +78,6 @@ var server = http.createServer(app).listen(app.get('port'), function(){
 /**
  * ShareJS Code
  */
-
 var options = {db: {type: 'none'}};
 sharejs.attach(app, options);
 
