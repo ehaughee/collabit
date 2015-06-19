@@ -1,6 +1,5 @@
 Collabit
 ========
-[![Stories in Ready](https://badge.waffle.io/ehaughee/collabit.png)](http://waffle.io/ehaughee/collabit)
 
 Collaborative programming page using Share.JS, the ACE editor, and Node.JS.
 
