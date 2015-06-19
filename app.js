@@ -28,9 +28,10 @@ var prodEnv = 'production' == app.get('env');
 app.use(sassMiddleware({
   root: __dirname,
   src: 'sass',
-  dest: path.join('public'),
+  dest: path.join('public', 'stylesheets'),
   debug: !prodEnv,
-  sourceMap: !prodEnv
+  sourceMap: !prodEnv,
+  prefix: '/stylesheets'
 }));
 
 // Statics
