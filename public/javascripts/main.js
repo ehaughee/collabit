@@ -196,7 +196,10 @@ $(function() {
     // Build message container
     var msgElem = document.createElement('div');
     msgElem.classList.add('message');
-    msgElem.classList.toggle('server', fServer);
+    
+    if (fServer) {
+      msgElem.classList.add('server');
+    }
 
     // Build username
     var unameElem = document.createElement('strong');

@@ -14,7 +14,13 @@ var express = require('express')
 
 var app = express();
 
-var prodEnv = 'production' == app.get('env');
+// Constants
+var IS_PROD_ENV = 'production' == app.get('env');
+var MAX_USERNAME_LENGTH = 20; // TODO: Make config file option
+var MAX_ROOM_NAME_LENGTH = 6; // TODO: Make config file option
+
+// Globals
+var rooms = {};
 
 app.set('port', process.env.PORT || 4000);
 app.set('views', __dirname + '/views');
@@ -29,8 +35,8 @@ app.use(sassMiddleware({
   root: __dirname,
   src: 'sass',
   dest: path.join('public', 'stylesheets'),
-  debug: !prodEnv,
-  sourceMap: !prodEnv,
+  debug: !IS_PROD_ENV,
+  sourceMap: !IS_PROD_ENV,
   prefix: '/stylesheets'
 }));
 
@@ -38,12 +44,10 @@ app.use(sassMiddleware({
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Production specific middleware
-if (prodEnv) {
+if (IS_PROD_ENV) {
   var errorhandler = require('errorhandler');
   app.use(errorhandler());
 }
-
-var rooms = {};
 
 
 /**
@@ -52,6 +56,7 @@ var rooms = {};
 app.get('/', function (req, res) {
   var room = "";
 
+  // TODO: Make into a GetRoomName function
   do {
     room = makeid();
   } while (typeof rooms[room] !== "undefined");
@@ -82,11 +87,12 @@ var server = http.createServer(app).listen(app.get('port'), function(){
 var options = {db: {type: 'none'}};
 sharejs.attach(app, options);
 
+// TODO: Explore better ways to generate a room name?
 function makeid() {
   var text = [];
   var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-  for(var i = 0; i < 6; i++) {
+  for(var i = 0; i < MAX_ROOM_NAME_LENGTH; i++) {
     text.push(possible.charAt(Math.floor(Math.random() * possible.length)));
   }
 
@@ -110,23 +116,13 @@ io.of('/chat').on('connection', function (socket) {
   socket.on('adduser', function(username, room){
     username = sanitizer.escape(username).trim();
     room = sanitizer.escape(room);
-
-    if (typeof username !== "undefined"
-        && username !== ""
-        && username !== null
-        && !username.match(/server/i)) {
-      if (typeof room !== "undefined" && room.match(/[A-Za-z0-9]{6}/) && typeof rooms[room] !== "undefined") {
-        socket.join(room);
-        socket.room = room;
-      }
-      else {
-        socket.emit('exception', 'Invalid room: ' + room);
-        socket.disconnect();
-        return;
-      }
-
-      if (rooms[room].usernames.indexOf(username) === -1) {
-      	rooms[room].usernames.push(username);
+    
+    if (FValidRoom(socket, room)) {
+      socket.join(room);
+      socket.room = room;
+      
+      if (FValidUsername(io, socket, username, room)) {
+        rooms[room].usernames.push(username);
         socket.username = username;
 
         socket.emit('updatechatserver', 'you have connected to room ' + socket.room);
@@ -134,19 +130,45 @@ io.of('/chat').on('connection', function (socket) {
         socket.broadcast.to(socket.room).emit('updatechatserver', username + ' has connected');
         io.of('/chat').emit('updateusers', rooms[room].usernames);
       }
-      else {
-        socket.emit('adduserfail', 'Invalid username, already in use: ' + username);
-      }
     }
-    else {
-      socket.emit('adduserfail', 'Invalid username: ' + username);
-    }
+    
+  //     if (typeof username !== "undefined"
+  //       && username !== ""
+  //       && username !== null
+  //       && !username.match(/server/i)) {
+  //       
+  //       if (typeof room !== "undefined" && room.match(/[A-Za-z0-9]{6}/) && typeof rooms[room] !== "undefined") {
+  //         socket.join(room);
+  //         socket.room = room;
+  //       }
+  //       else {
+  //         socket.emit('exception', 'Invalid room: ' + room);
+  //         socket.disconnect();
+  //         return;
+  //       }
+  // 
+  //       if (rooms[room].usernames.indexOf(username) === -1) {
+  //       	rooms[room].usernames.push(username);
+  //         socket.username = username;
+  // 
+  //         socket.emit('updatechatserver', 'you have connected to room ' + socket.room);
+  //         socket.emit('addusersuccess', room);
+  //         socket.broadcast.to(socket.room).emit('updatechatserver', username + ' has connected');
+  //         io.of('/chat').emit('updateusers', rooms[room].usernames);
+  //       }
+  //       else {
+  //         socket.emit('adduserfail', 'Invalid username, already in use: ' + username);
+  //       }
+  //   }
+  //   else {
+  //     socket.emit('adduserfail', 'Invalid username: ' + username);
+  //   }
   });
 
   socket.on('changelang', function (lang) {
     lang = sanitizer.escape(lang);
 
-    // TODO: Should probably do some validation on this
+    // TODO: Do some validation on the lang here
     io.of('/chat').in(socket.room).emit('updatelang', lang, socket.username);
   });
 
@@ -179,6 +201,37 @@ function disconnect(socket) {
       socket.broadcast.to(socket.room).emit('updatechatserver', socket.username + ' has disconnected');
     }
   }
+}
+
+function FValidUsername(io, socket, username, room) {
+  if (typeof username === "undefined"
+      || username === ""
+      || username === null
+      || username.match(/server/i)) {
+        
+    socket.emit('adduserfail', 'Invalid username: ' + username);
+    return false;
+  }
+  else if (rooms[room].usernames.indexOf(username) !== -1) {
+    socket.emit('adduserfail', 'Invalid username, already in use: ' + username);
+    return false;
+  }
+  else if (username.length > MAX_USERNAME_LENGTH) {
+    socket.emit('adduserfail', 'Username too long: ' + username + ". Max characters allowed: " + MAX_USERNAME_LENGTH);
+    return false;
+  }
+  
+  return true;
+}
+
+function FValidRoom(socket, room) {
+  if (typeof room === "undefined" || !room.match(/[A-Za-z0-9]{6}/) || typeof rooms[room] === "undefined") {
+    socket.emit('exception', 'Invalid room: ' + room);
+    socket.disconnect();
+    return false;
+  }
+
+  return true;
 }
 
 function RemoveFromArray(obj, array) {

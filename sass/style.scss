@@ -1,3 +1,6 @@
+$message-color: black;
+$server-message-color: #999;
+
 body {
 	padding: 50px;
 	font: 14px "Helvetica", "Arial", "sans-serif";
@@ -37,9 +40,13 @@ body {
 		padding-left: 3px;
 		overflow-y: scroll;
 		overflow-x: auto;
+		
+		.message {
+			color: $message-color;
+		}
 
 		.server {
-			color: grey;
+			color: $server-message-color;
 		}
 	}
 
