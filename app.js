@@ -14,6 +14,8 @@ var express = require('express')
 
 var app = express();
 
+var prodEnv = 'production' == app.get('env');
+
 app.set('port', process.env.PORT || 4000);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
@@ -21,8 +23,6 @@ app.set('view engine', 'jade');
 app.use(logger('dev'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(methodOverride());
-
-var prodEnv = 'production' == app.get('env');
 
 // Sass
 app.use(sassMiddleware({
@@ -129,9 +129,9 @@ io.of('/chat').on('connection', function (socket) {
       	rooms[room].usernames.push(username);
         socket.username = username;
 
-        socket.emit('updatechat', 'SERVER', 'you have connected to room ' + socket.room);
+        socket.emit('updatechatserver', 'you have connected to room ' + socket.room);
         socket.emit('addusersuccess', room);
-        socket.broadcast.to(socket.room).emit('updatechat', 'SERVER', username + ' has connected');
+        socket.broadcast.to(socket.room).emit('updatechatserver', username + ' has connected');
         io.of('/chat').emit('updateusers', rooms[room].usernames);
       }
       else {
@@ -176,7 +176,7 @@ function disconnect(socket) {
     }
     else {
       socket.broadcast.to(socket.room).emit('updateusers', rooms[socket.room].usernames);
-      socket.broadcast.to(socket.room).emit('updatechat', 'SERVER', socket.username + ' has disconnected');
+      socket.broadcast.to(socket.room).emit('updatechatserver', socket.username + ' has disconnected');
     }
   }
 }

@@ -80,13 +80,19 @@ $(function() {
     write_chat_message(username, tokenize(message));
   });
 
+  // [SOCKET] UPDATE CHAT SERVER
+  socket.on("updatechatserver", function(message) {
+    console.log("SOCKET: 'updatechatserver' emission detected.");
+    write_server_chat_message(tokenize(message));
+  });
+
   // [SOCKET] UPDATE USERS
   socket.on("updateusers", function(new_usernames) {
     var usersList = new_usernames.join(", ");
-    
+
     // Update users list
     $chat.find("#user-list #users").text(usersList);
-    
+
     // Logging
     console.log("SOCKET: updateusers [" + usersList + "]");
     usernames = new_usernames;
@@ -97,7 +103,7 @@ $(function() {
     console.log("SOCKET: updatelang detected. Language changed to " + lang + " by " + username);
     // TODO: Should probably do some validation on this
     $("select#mode").val(lang).trigger("chosen:updated");
-    write_chat_message("SERVER", username + " changed the language to " + lang);
+    write_server_chat_message(username + " changed the language to " + lang);
   });
 
   // [SOCKET] ADD USER SUCCESS
@@ -110,7 +116,7 @@ $(function() {
     sharejs.open(room, 'text', function(error, doc) {
       doc.attach_ace(editor);
     });
-    
+
     // Focus on the editor so the user can start typing as soon as they join.
     editor.focus();
   });
@@ -163,12 +169,12 @@ $(function() {
 
   // Click on line link moves cursor in Ace editor
   $("#messages").on("click", "a.linelink", function(e) {
-    var line = this.dataset.line.substr(1) / 1;
+    var line = Number(this.dataset.line.substr(1));
 
     if (Number.isInteger(line) && line < session.getLength()) {
       // Move to clicked line
       editor.gotoLine(line, 0, true);
-      
+
       // Focus on the text editor
       editor.focus();
     }
@@ -182,8 +188,33 @@ $(function() {
     socket.emit("userleft");
   };
 
-  function write_chat_message(username, message) {
-    $messages.append('<b>' + username + ':</b> ' + message + '<br>');
+  function write_server_chat_message(message) {
+    write_chat_message("SERVER", message, true);
+  }
+
+  function write_chat_message(username, message, fServer) {
+    // Build message container
+    var msgElem = document.createElement('div');
+    msgElem.classList.add('message');
+    msgElem.classList.toggle('server', fServer);
+
+    // Build username
+    var unameElem = document.createElement('strong');
+    unameElem.textContent = username + ": ";
+
+    // Build message body
+    var msgBody = document.createTextNode(message);
+
+    // Construct message
+    msgElem.appendChild(unameElem);
+    msgElem.appendChild(msgBody);
+    $messages.append(msgElem);
+
+    // TODO: use html element objects instead of strings
+    //$messages.append('<div class="message' + (fServer ? ' server' : '') + '">');
+    //$messages.append('<b>' + username + ':</b> ' + message + '</div><br>');
+
+    // Scroll to the bottom of the messages container
     $messages[0].scrollTop = $messages[0].scrollHeight;
   }
 

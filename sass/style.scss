@@ -1,6 +1,6 @@
 body {
 	padding: 50px;
-	font: 14px "Lucida Grande", "Helvetica", "Arial", "sans-serif";
+	font: 14px "Helvetica", "Arial", "sans-serif";
 }
 
 #editor {
@@ -37,6 +37,10 @@ body {
 		padding-left: 3px;
 		overflow-y: scroll;
 		overflow-x: auto;
+
+		.server {
+			color: grey;
+		}
 	}
 
 	#messagebox {
