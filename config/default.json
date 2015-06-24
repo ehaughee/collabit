@@ -1,0 +1,6 @@
+{
+  "app": {
+    "max_username_length": 20,
+    "max_room_name_length": 6
+  }
+}
