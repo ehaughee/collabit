@@ -10,18 +10,19 @@ var express = require('express')
   , http = require('http')
   , path = require('path')
   , sanitizer = require('sanitizer')
-  , sassMiddleware = require('node-sass-middleware');
+  , sassMiddleware = require('node-sass-middleware')
+  , config = require('config');
 
+// Globals
 var app = express();
+var rooms = {};
 
 // Constants
 var IS_PROD_ENV = 'production' == app.get('env');
-var MAX_USERNAME_LENGTH = 20; // TODO: Make config file option
-var MAX_ROOM_NAME_LENGTH = 6; // TODO: Make config file option
+var MAX_USERNAME_LENGTH = config.get('app.max_username_length');
+var MAX_ROOM_NAME_LENGTH = config.get('app.max_room_name_length');
 
-// Globals
-var rooms = {};
-
+// Middleware
 app.set('port', process.env.PORT || 4000);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
@@ -116,11 +117,11 @@ io.of('/chat').on('connection', function (socket) {
   socket.on('adduser', function(username, room){
     username = sanitizer.escape(username).trim();
     room = sanitizer.escape(room);
-    
+
     if (FValidRoom(socket, room)) {
       socket.join(room);
       socket.room = room;
-      
+
       if (FValidUsername(io, socket, username, room)) {
         rooms[room].usernames.push(username);
         socket.username = username;
@@ -131,38 +132,6 @@ io.of('/chat').on('connection', function (socket) {
         io.of('/chat').emit('updateusers', rooms[room].usernames);
       }
     }
-    
-  //     if (typeof username !== "undefined"
-  //       && username !== ""
-  //       && username !== null
-  //       && !username.match(/server/i)) {
-  //       
-  //       if (typeof room !== "undefined" && room.match(/[A-Za-z0-9]{6}/) && typeof rooms[room] !== "undefined") {
-  //         socket.join(room);
-  //         socket.room = room;
-  //       }
-  //       else {
-  //         socket.emit('exception', 'Invalid room: ' + room);
-  //         socket.disconnect();
-  //         return;
-  //       }
-  // 
-  //       if (rooms[room].usernames.indexOf(username) === -1) {
-  //       	rooms[room].usernames.push(username);
-  //         socket.username = username;
-  // 
-  //         socket.emit('updatechatserver', 'you have connected to room ' + socket.room);
-  //         socket.emit('addusersuccess', room);
-  //         socket.broadcast.to(socket.room).emit('updatechatserver', username + ' has connected');
-  //         io.of('/chat').emit('updateusers', rooms[room].usernames);
-  //       }
-  //       else {
-  //         socket.emit('adduserfail', 'Invalid username, already in use: ' + username);
-  //       }
-  //   }
-  //   else {
-  //     socket.emit('adduserfail', 'Invalid username: ' + username);
-  //   }
   });
 
   socket.on('changelang', function (lang) {
@@ -208,7 +177,7 @@ function FValidUsername(io, socket, username, room) {
       || username === ""
       || username === null
       || username.match(/server/i)) {
-        
+
     socket.emit('adduserfail', 'Invalid username: ' + username);
     return false;
   }
@@ -220,7 +189,7 @@ function FValidUsername(io, socket, username, room) {
     socket.emit('adduserfail', 'Username too long: ' + username + ". Max characters allowed: " + MAX_USERNAME_LENGTH);
     return false;
   }
-  
+
   return true;
 }
 
