@@ -212,11 +212,7 @@ $(function() {
     msgElem.appendChild(unameElem);
     msgElem.appendChild(msgBody);
     $messages.append(msgElem);
-
-    // TODO: use html element objects instead of strings
-    //$messages.append('<div class="message' + (fServer ? ' server' : '') + '">');
-    //$messages.append('<b>' + username + ':</b> ' + message + '</div><br>');
-
+    
     // Scroll to the bottom of the messages container
     $messages[0].scrollTop = $messages[0].scrollHeight;
   }
