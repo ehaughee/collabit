@@ -11,10 +11,11 @@ Demo: http://collabit.herokuapp.com
 ### *nix Install
 
 1. `brew/apt-get install node npm`
-3. `git clone https://github.com/ehaughee/collabit.git`
-4. `cd collabit`
-5. `npm install`
-7. `node app.js`
+2. `git clone https://github.com/ehaughee/collabit.git`
+3. `cd collabit`
+4. `npm install`
+5. Optionally, if you are using VSCode and want intellisense: 'npm run devsetup'
+7. `npm start`
 8. Navigate to http://localhost:4000
 
 ### Windows Install (draft)

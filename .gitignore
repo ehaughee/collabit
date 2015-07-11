@@ -24,5 +24,8 @@ npm-debug.log
 .idea/*
 *.swp
 
+# tsd files
+typings
+
 # VSCode files
 .settings

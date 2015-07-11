@@ -1,0 +1,6 @@
+{
+    "files": [
+        "app.js",
+        "typings/tsd.d.ts"
+    ]
+}
