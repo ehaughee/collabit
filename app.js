@@ -1,3 +1,5 @@
+"use strict";
+
 /**
  * Module dependencies.
  */
@@ -157,8 +159,8 @@ function disconnect(socket) {
     if (typeof rooms[socket.room].usernames !== "undefined") {
       console.log("Deleting user: " + socket.username);
       var temp = RemoveFromArray(socket.username, rooms[socket.room].usernames);
-      if (temp === false && typeof username !== "undefined") {
-        console.log('ERROR: Failed to remove: ' + username);
+      if (temp === false && typeof socket.username !== "undefined") {
+        console.log('ERROR: Failed to remove: ' + socket.username);
       }
     }
     if (rooms[socket.room].usernames.length === 0) {
