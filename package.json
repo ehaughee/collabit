@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "node app",
-    "postinstall": "node node_modules/bower/bin/bower install"
+    "postinstall": "node node_modules/bower/bin/bower install",
+    "devsetup": "tsd install"
   },
   "dependencies": {
     "body-parser": "^1.12.4",
@@ -19,5 +20,8 @@
     "sanitizer": "^0.1.2",
     "share": "^0.6.3",
     "socket.io": "~0.9.16"
+  },
+  "devDependencies": {
+    "tsd": "^0.6.3"
   }
 }
