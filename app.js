@@ -13,7 +13,8 @@ var express = require('express')
   , path = require('path')
   , sanitizer = require('sanitizer')
   , sassMiddleware = require('node-sass-middleware')
-  , config = require('config');
+  , config = require('config')
+  , arrayUtil = require('./util/arrayUtil')(logger);
 
 // Globals
 var app = express();
@@ -158,7 +159,7 @@ function disconnect(socket) {
   if (typeof rooms[socket.room] !== "undefined") {
     if (typeof rooms[socket.room].usernames !== "undefined") {
       console.log("Deleting user: " + socket.username);
-      var temp = RemoveFromArray(socket.username, rooms[socket.room].usernames);
+      var temp = arrayUtil.remove(socket.username, rooms[socket.room].usernames);
       if (temp === false && typeof socket.username !== "undefined") {
         console.log('ERROR: Failed to remove: ' + socket.username);
       }
@@ -203,21 +204,4 @@ function FValidRoom(socket, room) {
   }
 
   return true;
-}
-
-function RemoveFromArray(obj, array) {
-  if (array.indexOf) {
-    var index = array.indexOf(obj);
-    if (index !== -1) {
-      return array.splice(index, 1);
-    }
-    else {
-      console.log("Object does not exist in array");
-    }
-  }
-  else {
-    console.log("Array.indexOf does not exist.  Unsupported function.");
-  }
-
-  return false;
 }
