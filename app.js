@@ -14,7 +14,7 @@ var express = require('express')
   , sanitizer = require('sanitizer')
   , sassMiddleware = require('node-sass-middleware')
   , config = require('config')
-  , arrayUtil = require('./util/arrayUtil')(logger);
+  , arrayUtil = require('./util/arrayUtil')(console);
 
 // Globals
 var app = express();
