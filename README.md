@@ -15,6 +15,7 @@ Demo: http://collabit.herokuapp.com
 3. `cd collabit`
 4. `npm install`
 5. Optionally, if you are using VSCode and want intellisense: `npm run devsetup`
+6. And if you want to run the tests: `npm test`
 7. `npm start`
 8. Navigate to http://localhost:4000
 
