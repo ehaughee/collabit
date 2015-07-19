@@ -1,5 +1,3 @@
-/// <reference path="../../typings/jasmine/jasmine.d.ts"/>
-
 var rooms = {
         room12: {
             usernames: ['existingUser']
