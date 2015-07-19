@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node app",
+    "test": "node node_modules/jasmine/bin/jasmine",
     "postinstall": "node node_modules/bower/bin/bower install",
     "devsetup": "tsd install"
   },
