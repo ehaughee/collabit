@@ -13,15 +13,17 @@ var express = require('express')
   , path = require('path')
   , sanitizer = require('sanitizer')
   , sassMiddleware = require('node-sass-middleware')
-  , config = require('config');
+  , config = require('config')
+  , roomValidate = require('./util/roomValidate')
+  , arrayUtil = require('./util/arrayUtil')(console);
 
 // Globals
 var app = express();
 var rooms = {};
+var validate = roomValidate(rooms, { maxUserNameLength: config.get('app.max_username_length') });
 
 // Constants
 var IS_PROD_ENV = 'production' == app.get('env');
-var MAX_USERNAME_LENGTH = config.get('app.max_username_length');
 var MAX_ROOM_NAME_LENGTH = config.get('app.max_room_name_length');
 
 // Middleware
@@ -119,21 +121,34 @@ io.of('/chat').on('connection', function (socket) {
   socket.on('adduser', function(username, room){
     username = sanitizer.escape(username).trim();
     room = sanitizer.escape(room);
-
-    if (FValidRoom(socket, room)) {
-      socket.join(room);
-      socket.room = room;
-
-      if (FValidUsername(io, socket, username, room)) {
-        rooms[room].usernames.push(username);
-        socket.username = username;
-
-        socket.emit('updatechatserver', 'you have connected to room ' + socket.room);
-        socket.emit('addusersuccess', room);
-        socket.broadcast.to(socket.room).emit('updatechatserver', username + ' has connected');
-        io.of('/chat').emit('updateusers', rooms[room].usernames);
+    
+    validate.room(room, function (err, isRoomValid) {
+      if (err) {
+        socket.emit(err.name, err.arg);
+        socket.disconnect();
       }
-    }
+      
+      if (isRoomValid) {
+        socket.join(room);
+        socket.room = room;
+        
+        validate.username(username, room, function (err, isUsernameValid) {
+          if (err) {
+            socket.emit(err.name, err.arg);
+          }
+          
+          if (isUsernameValid) {
+            rooms[room].usernames.push(username);
+            socket.username = username;
+    
+            socket.emit('updatechatserver', 'you have connected to room ' + socket.room);
+            socket.emit('addusersuccess', room);
+            socket.broadcast.to(socket.room).emit('updatechatserver', username + ' has connected');
+            io.of('/chat').emit('updateusers', rooms[room].usernames);
+          }
+        });
+      }
+    });
   });
 
   socket.on('changelang', function (lang) {
@@ -158,7 +173,7 @@ function disconnect(socket) {
   if (typeof rooms[socket.room] !== "undefined") {
     if (typeof rooms[socket.room].usernames !== "undefined") {
       console.log("Deleting user: " + socket.username);
-      var temp = RemoveFromArray(socket.username, rooms[socket.room].usernames);
+      var temp = arrayUtil.remove(socket.username, rooms[socket.room].usernames);
       if (temp === false && typeof socket.username !== "undefined") {
         console.log('ERROR: Failed to remove: ' + socket.username);
       }
@@ -172,52 +187,4 @@ function disconnect(socket) {
       socket.broadcast.to(socket.room).emit('updatechatserver', socket.username + ' has disconnected');
     }
   }
-}
-
-function FValidUsername(io, socket, username, room) {
-  if (typeof username === "undefined"
-      || username === ""
-      || username === null
-      || username.match(/server/i)) {
-
-    socket.emit('adduserfail', 'Invalid username: ' + username);
-    return false;
-  }
-  else if (rooms[room].usernames.indexOf(username) !== -1) {
-    socket.emit('adduserfail', 'Invalid username, already in use: ' + username);
-    return false;
-  }
-  else if (username.length > MAX_USERNAME_LENGTH) {
-    socket.emit('adduserfail', 'Username too long: ' + username + ". Max characters allowed: " + MAX_USERNAME_LENGTH);
-    return false;
-  }
-
-  return true;
-}
-
-function FValidRoom(socket, room) {
-  if (typeof room === "undefined" || !room.match(/[A-Za-z0-9]{6}/) || typeof rooms[room] === "undefined") {
-    socket.emit('exception', 'Invalid room: ' + room);
-    socket.disconnect();
-    return false;
-  }
-
-  return true;
-}
-
-function RemoveFromArray(obj, array) {
-  if (array.indexOf) {
-    var index = array.indexOf(obj);
-    if (index !== -1) {
-      return array.splice(index, 1);
-    }
-    else {
-      console.log("Object does not exist in array");
-    }
-  }
-  else {
-    console.log("Array.indexOf does not exist.  Unsupported function.");
-  }
-
-  return false;
 }
