@@ -14,13 +14,12 @@ var express = require('express')
   , sanitizer = require('sanitizer')
   , sassMiddleware = require('node-sass-middleware')
   , config = require('config')
-  , roomValidate = require('./util/roomValidate')
+  , validate = require('./util/validate')(rooms, { maxUserNameLength: config.get('app.max_username_length') })
   , arrayUtil = require('./util/arrayUtil')(console);
 
 // Globals
 var app = express();
 var rooms = {};
-var validate = roomValidate(rooms, { maxUserNameLength: config.get('app.max_username_length') });
 
 // Constants
 var IS_PROD_ENV = 'production' == app.get('env');
