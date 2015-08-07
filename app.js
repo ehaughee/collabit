@@ -14,12 +14,14 @@ var express = require('express')
   , sanitizer = require('sanitizer')
   , sassMiddleware = require('node-sass-middleware')
   , config = require('config')
-  , validate = require('./util/validate')(rooms, { maxUserNameLength: config.get('app.max_username_length') })
   , arrayUtil = require('./util/arrayUtil')(console);
 
 // Globals
 var app = express();
 var rooms = {};
+
+// Set up validator
+var validate = require('./util/validate')(rooms, { maxUserNameLength: config.get('app.max_username_length') });
 
 // Constants
 var IS_PROD_ENV = 'production' == app.get('env');
@@ -120,26 +122,26 @@ io.of('/chat').on('connection', function (socket) {
   socket.on('adduser', function(username, room){
     username = sanitizer.escape(username).trim();
     room = sanitizer.escape(room);
-    
+
     validate.room(room, function (err, isRoomValid) {
       if (err) {
         socket.emit(err.name, err.arg);
         socket.disconnect();
       }
-      
+
       if (isRoomValid) {
         socket.join(room);
         socket.room = room;
-        
+
         validate.username(username, room, function (err, isUsernameValid) {
           if (err) {
             socket.emit(err.name, err.arg);
           }
-          
+
           if (isUsernameValid) {
             rooms[room].usernames.push(username);
             socket.username = username;
-    
+
             socket.emit('updatechatserver', 'you have connected to room ' + socket.room);
             socket.emit('addusersuccess', room);
             socket.broadcast.to(socket.room).emit('updatechatserver', username + ' has connected');
