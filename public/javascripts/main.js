@@ -21,17 +21,54 @@ $(function() {
   session.setUseWorker(false);
   editor.setTheme("ace/theme/monokai");
   session.setMode("ace/mode/javascript");
-
+  
+  var modeList = ace.require("ace/ext/modelist");
+  var themeList = ace.require("ace/ext/themelist");
+  
   // Chosen
   // =========================================================
+  // Fill mode select with available modes
+  var modes = document.createDocumentFragment();
+  _.each(modeList.modes, function(mode) {
+    var opt = document.createElement("option");
+    opt.setAttribute("value", mode.mode);
+    opt.innerText = mode.caption;
+    modes.appendChild(opt);
+  });
+  $selectMode.html(modes);
+  
+  // Default to JavaScript
+  $selectMode.val("ace/mode/javascript");
+  
   $selectMode.chosen({
     width: "180px",
-    search_contains: true
+    search_contains: true,
+    placeholder_text_single: "Choose a language",
+    inherit_select_classes: true
   })
   .on('change', function () {
-    editor.getSession().setMode("ace/mode/" + this.value);
-    socket.emit('changelang', this.value);
+    editor.getSession().setMode(this.value);
+    socket.emit('changelang', this.value, this.options[this.selectedIndex].text);
   });
+  
+  // Fill theme select with available themes
+  // var themes = document.createDocumentFragment();
+  // _.each(themeList.themes, function(theme) {
+  //   var opt = document.createElement("option");
+  //   opt.setAttribute("value", theme.theme);
+  //   opt.innerHTML = theme.caption;
+  //   themes.appendChild(opt);
+  // });
+  // $selectTheme.html(themes);
+  
+  // $selectTheme.chosen({
+  //   width: "180px",
+  //   search_contains: true
+  // })
+  // .on('change', function () {
+  //   editor.getSession().setTheme(this.value);
+  //   // socket.emit('changetheme', this.value);
+  // });
 
   // Socket.IO
   // ========================================================
@@ -99,11 +136,11 @@ $(function() {
   });
 
   // [SOCKET] UPDATE LANG
-  socket.on("updatelang", function(lang, username) {
-    console.log("SOCKET: updatelang detected. Language changed to " + lang + " by " + username);
+  socket.on("updatelang", function(value, caption, username) {
+    console.log("SOCKET: updatelang detected. Language changed to " + caption + " by " + username);
     // TODO: Should probably do some validation on this
-    $("select#mode").val(lang).trigger("chosen:updated");
-    write_server_chat_message(username + " changed the language to " + lang);
+    $("select#mode").val(value).trigger("chosen:updated");
+    write_server_chat_message(username + " changed the language to " + caption);
   });
 
   // [SOCKET] ADD USER SUCCESS

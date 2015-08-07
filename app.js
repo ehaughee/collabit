@@ -120,26 +120,26 @@ io.of('/chat').on('connection', function (socket) {
   socket.on('adduser', function(username, room){
     username = sanitizer.escape(username).trim();
     room = sanitizer.escape(room);
-    
+
     validate.room(room, function (err, isRoomValid) {
       if (err) {
         socket.emit(err.name, err.arg);
         socket.disconnect();
       }
-      
+
       if (isRoomValid) {
         socket.join(room);
         socket.room = room;
-        
+
         validate.username(username, room, function (err, isUsernameValid) {
           if (err) {
             socket.emit(err.name, err.arg);
           }
-          
+
           if (isUsernameValid) {
             rooms[room].usernames.push(username);
             socket.username = username;
-    
+
             socket.emit('updatechatserver', 'you have connected to room ' + socket.room);
             socket.emit('addusersuccess', room);
             socket.broadcast.to(socket.room).emit('updatechatserver', username + ' has connected');
@@ -150,11 +150,12 @@ io.of('/chat').on('connection', function (socket) {
     });
   });
 
-  socket.on('changelang', function (lang) {
-    lang = sanitizer.escape(lang);
+  socket.on('changelang', function (value, caption) {
+    value = sanitizer.escape(value);
+    caption = sanitizer.escape(caption);
 
     // TODO: Do some validation on the lang here
-    io.of('/chat').in(socket.room).emit('updatelang', lang, socket.username);
+    io.of('/chat').in(socket.room).emit('updatelang', value, caption, socket.username);
   });
 
   socket.on('userleft', function () {
