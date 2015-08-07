@@ -22,15 +22,78 @@ $(function() {
   editor.setTheme("ace/theme/monokai");
   session.setMode("ace/mode/javascript");
 
+  var modeList = ace.require("ace/ext/modelist");
+  var themeList = ace.require("ace/ext/themelist");
+
   // Chosen
   // =========================================================
+  // Fill mode select with available modes
+  var modes = document.createDocumentFragment();
+  for(var i = 0; i < modeList.modes.length; i++) {
+    var mode = modeList.modes[i];
+
+    var opt = document.createElement("option");
+    opt.setAttribute("value", mode.mode);
+    opt.innerText = mode.caption;
+    modes.appendChild(opt);
+  }
+
+  // Populate select
+  $selectMode.html(modes);
+
+  // Default to JavaScript
+  $selectMode.val(modeList.modesByName.javascript.mode);
+
+  // Set up chosen
   $selectMode.chosen({
     width: "180px",
-    search_contains: true
+    search_contains: true,
+    placeholder_text_single: "Choose a language",
+    inherit_select_classes: true
   })
   .on('change', function () {
-    editor.getSession().setMode("ace/mode/" + this.value);
-    socket.emit('changelang', this.value);
+    editor.getSession().setMode(this.value);
+    socket.emit('changelang', this.value, this.options[this.selectedIndex].text);
+    editor.focus();
+  });
+
+  // Fill theme select with available themes
+  var darkThemes = document.createElement("optgroup");
+  darkThemes.setAttribute("label", "Dark");
+  var lightThemes = document.createElement("optgroup");
+  lightThemes.setAttribute("label", "Light");
+
+  for(var i = 0; i < themeList.themes.length; i++) {
+    var theme = themeList.themes[i];
+
+    var opt = document.createElement("option");
+    opt.setAttribute("value", theme.theme);
+    opt.innerHTML = theme.caption;
+
+    if (theme.isDark) {
+      darkThemes.appendChild(opt);
+    } else {
+      lightThemes.appendChild(opt);
+    }
+  }
+
+  // Populate select
+  $selectTheme.html(darkThemes);
+  $selectTheme.append(lightThemes);
+
+  // Default to monokai
+  $selectTheme.val(themeList.themesByName.monokai.theme);
+
+  // Set up chosen
+  $selectTheme.chosen({
+    width: "180px",
+    search_contains: true,
+    placeholder_text_single: "Choose a theme",
+    inherit_select_classes: true
+  })
+  .on('change', function () {
+    editor.setTheme(this.value);
+    editor.focus();
   });
 
   // Socket.IO
@@ -99,11 +162,11 @@ $(function() {
   });
 
   // [SOCKET] UPDATE LANG
-  socket.on("updatelang", function(lang, username) {
-    console.log("SOCKET: updatelang detected. Language changed to " + lang + " by " + username);
+  socket.on("updatelang", function(value, caption, username) {
+    console.log("SOCKET: updatelang detected. Language changed to " + caption + " by " + username);
     // TODO: Should probably do some validation on this
-    $("select#mode").val(lang).trigger("chosen:updated");
-    write_server_chat_message(username + " changed the language to " + lang);
+    $selectMode.val(value).trigger("chosen:updated");
+    write_server_chat_message(username + " changed the language to " + caption);
   });
 
   // [SOCKET] ADD USER SUCCESS
@@ -196,7 +259,7 @@ $(function() {
     // Build message container
     var msgElem = document.createElement('div');
     msgElem.classList.add('message');
-    
+
     if (fServer) {
       msgElem.classList.add('server');
     }
@@ -212,7 +275,7 @@ $(function() {
     msgElem.appendChild(unameElem);
     msgElem.appendChild(msgBody);
     $messages.append(msgElem);
-    
+
     // Scroll to the bottom of the messages container
     $messages[0].scrollTop = $messages[0].scrollHeight;
   }

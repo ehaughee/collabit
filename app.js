@@ -152,11 +152,12 @@ io.of('/chat').on('connection', function (socket) {
     });
   });
 
-  socket.on('changelang', function (lang) {
-    lang = sanitizer.escape(lang);
+  socket.on('changelang', function (value, caption) {
+    value = sanitizer.escape(value);
+    caption = sanitizer.escape(caption);
 
     // TODO: Do some validation on the lang here
-    io.of('/chat').in(socket.room).emit('updatelang', lang, socket.username);
+    io.of('/chat').in(socket.room).emit('updatelang', value, caption, socket.username);
   });
 
   socket.on('userleft', function () {
