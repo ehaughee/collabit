@@ -3,14 +3,13 @@ var usernames = [];
 $(function() {
   // Cache element selectors
   // =========================================================
-  $chat = $("#chat");
-  $editor = $("#editor");
-  $img_load = $("#img-load").remove();
-  $btn_submit = $("#btn_submit");
-  $messages = $("#messages");
-  $overlay = $("#overlay");
-  $selectMode = $("select#mode");
-  $selectTheme = $("select#theme");
+  var $chat = $("#chat");
+  var $img_load = $("#img-load").remove();
+  var $btn_submit = $("#btn_submit");
+  var $messages = $("#messages");
+  var $overlay = $("#overlay");
+  var $selectMode = $("select#mode");
+  var $selectTheme = $("select#theme");
 
   blockui($img_load);
 
