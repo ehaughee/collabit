@@ -24,6 +24,7 @@
     "bootstrap": "~3.3.4",
     "socket.io-client": "~0.9.16",
     "ace-builds": "~1.1.9",
-    "requirejs": "~2.1.19"
+    "requirejs": "~2.1.19",
+    "underscore": "~1.8.3"
   }
 }
