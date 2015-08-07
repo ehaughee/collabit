@@ -11,15 +11,16 @@ var express = require('express')
   , socket  = require('socket.io')
   , http = require('http')
   , path = require('path')
-  , sanitizer = require('sanitizer')
   , sassMiddleware = require('node-sass-middleware')
   , config = require('config')
-  , validate = require('./util/validate')(rooms, { maxUserNameLength: config.get('app.max_username_length') })
-  , arrayUtil = require('./util/arrayUtil')(console);
+  , _ = require('underscore');
 
 // Globals
 var app = express();
 var rooms = {};
+
+// Set up input validator
+var validate = require('./util/validate')(rooms, { maxUserNameLength: config.get('app.max_username_length') });
 
 // Constants
 var IS_PROD_ENV = 'production' == app.get('env');
@@ -71,7 +72,7 @@ app.get('/', function (req, res) {
 });
 
 app.get('/:room([A-Za-z0-9]{6})', function (req, res) {
-  var room = sanitizer.escape(req.params.room);
+  var room = _.escape(req.params.room);
 
   if (typeof rooms[room] === "undefined") {
     rooms[room] = { usernames: [] };
@@ -112,34 +113,34 @@ var io = require('socket.io').listen(server);
 io.of('/chat').on('connection', function (socket) {
 
   socket.on('sendchat', function (message) {
-    message = sanitizer.escape(message);
+    message = _.escape(message);
 
     io.of('/chat').in(socket.room).emit('updatechat', socket.username, message);
   });
 
   socket.on('adduser', function(username, room){
-    username = sanitizer.escape(username).trim();
-    room = sanitizer.escape(room);
-    
+    username = _.escape(username).trim();
+    room = _.escape(room);
+
     validate.room(room, function (err, isRoomValid) {
       if (err) {
         socket.emit(err.name, err.arg);
         socket.disconnect();
       }
-      
+
       if (isRoomValid) {
         socket.join(room);
         socket.room = room;
-        
+
         validate.username(username, room, function (err, isUsernameValid) {
           if (err) {
             socket.emit(err.name, err.arg);
           }
-          
+
           if (isUsernameValid) {
             rooms[room].usernames.push(username);
             socket.username = username;
-    
+
             socket.emit('updatechatserver', 'you have connected to room ' + socket.room);
             socket.emit('addusersuccess', room);
             socket.broadcast.to(socket.room).emit('updatechatserver', username + ' has connected');
@@ -150,11 +151,12 @@ io.of('/chat').on('connection', function (socket) {
     });
   });
 
-  socket.on('changelang', function (lang) {
-    lang = sanitizer.escape(lang);
+  socket.on('changelang', function (value, caption) {
+    value = _.escape(value);
+    caption = _.escape(caption);
 
     // TODO: Do some validation on the lang here
-    io.of('/chat').in(socket.room).emit('updatelang', lang, socket.username);
+    io.of('/chat').in(socket.room).emit('updatelang', value, caption, socket.username);
   });
 
   socket.on('userleft', function () {
@@ -172,10 +174,7 @@ function disconnect(socket) {
   if (typeof rooms[socket.room] !== "undefined") {
     if (typeof rooms[socket.room].usernames !== "undefined") {
       console.log("Deleting user: " + socket.username);
-      var temp = arrayUtil.remove(socket.username, rooms[socket.room].usernames);
-      if (temp === false && typeof socket.username !== "undefined") {
-        console.log('ERROR: Failed to remove: ' + socket.username);
-      }
+      rooms[socket.room].usernames = _.without(rooms[socket.room].usernames, socket.username);
     }
     if (rooms[socket.room].usernames.length === 0) {
       console.log("Deleting empty room: " + socket.room);
