@@ -11,16 +11,15 @@ var express = require('express')
   , socket  = require('socket.io')
   , http = require('http')
   , path = require('path')
-  , sanitizer = require('sanitizer')
   , sassMiddleware = require('node-sass-middleware')
   , config = require('config')
-  , arrayUtil = require('./util/arrayUtil')(console);
+  , _ = require('underscore');
 
 // Globals
 var app = express();
 var rooms = {};
 
-// Set up validator
+// Set up input validator
 var validate = require('./util/validate')(rooms, { maxUserNameLength: config.get('app.max_username_length') });
 
 // Constants
@@ -73,7 +72,7 @@ app.get('/', function (req, res) {
 });
 
 app.get('/:room([A-Za-z0-9]{6})', function (req, res) {
-  var room = sanitizer.escape(req.params.room);
+  var room = _.escape(req.params.room);
 
   if (typeof rooms[room] === "undefined") {
     rooms[room] = { usernames: [] };
@@ -114,14 +113,13 @@ var io = require('socket.io').listen(server);
 io.of('/chat').on('connection', function (socket) {
 
   socket.on('sendchat', function (message) {
-    message = sanitizer.escape(message);
+    message = _.escape(message);
 
     io.of('/chat').in(socket.room).emit('updatechat', socket.username, message);
   });
 
-  socket.on('adduser', function(username, room){
-    username = sanitizer.escape(username).trim();
-    room = sanitizer.escape(room);
+  socket.on('adduser', function(username, room) {
+    room = _.escape(room);
 
     validate.room(room, function (err, isRoomValid) {
       if (err) {
@@ -153,7 +151,7 @@ io.of('/chat').on('connection', function (socket) {
   });
 
   socket.on('changelang', function (lang) {
-    lang = sanitizer.escape(lang);
+    lang = _.escape(lang);
 
     // TODO: Do some validation on the lang here
     io.of('/chat').in(socket.room).emit('updatelang', lang, socket.username);
@@ -174,10 +172,7 @@ function disconnect(socket) {
   if (typeof rooms[socket.room] !== "undefined") {
     if (typeof rooms[socket.room].usernames !== "undefined") {
       console.log("Deleting user: " + socket.username);
-      var temp = arrayUtil.remove(socket.username, rooms[socket.room].usernames);
-      if (temp === false && typeof socket.username !== "undefined") {
-        console.log('ERROR: Failed to remove: ' + socket.username);
-      }
+      rooms[socket.room].usernames = _.without(rooms[socket.room].usernames, socket.username);
     }
     if (rooms[socket.room].usernames.length === 0) {
       console.log("Deleting empty room: " + socket.room);
