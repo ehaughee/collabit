@@ -29,12 +29,14 @@ $(function() {
   // =========================================================
   // Fill mode select with available modes
   var modes = document.createDocumentFragment();
-  _.each(modeList.modes, function(mode) {
+  for(var i = 0; i < modeList.modes.length; i++) {
+    var mode = modeList.modes[i];
+
     var opt = document.createElement("option");
     opt.setAttribute("value", mode.mode);
     opt.innerText = mode.caption;
     modes.appendChild(opt);
-  });
+  }
 
   // Populate select
   $selectMode.html(modes);
@@ -61,7 +63,9 @@ $(function() {
   var lightThemes = document.createElement("optgroup");
   lightThemes.setAttribute("label", "Light");
 
-  _.each(themeList.themes, function(theme) {
+  for(var i = 0; i < themeList.themes.length; i++) {
+    var theme = themeList.themes[i];
+
     var opt = document.createElement("option");
     opt.setAttribute("value", theme.theme);
     opt.innerHTML = theme.caption;
@@ -71,7 +75,7 @@ $(function() {
     } else {
       lightThemes.appendChild(opt);
     }
-  });
+  }
 
   // Populate select
   $selectTheme.html(darkThemes);
@@ -255,7 +259,7 @@ $(function() {
     // Build message container
     var msgElem = document.createElement('div');
     msgElem.classList.add('message');
-    
+
     if (fServer) {
       msgElem.classList.add('server');
     }
@@ -271,7 +275,7 @@ $(function() {
     msgElem.appendChild(unameElem);
     msgElem.appendChild(msgBody);
     $messages.append(msgElem);
-    
+
     // Scroll to the bottom of the messages container
     $messages[0].scrollTop = $messages[0].scrollHeight;
   }
