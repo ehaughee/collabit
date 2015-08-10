@@ -206,7 +206,8 @@ $(function() {
     unameElem.textContent = username + ": ";
 
     // Build message body
-    var msgBody = document.createTextNode(message);
+    var msgBody = document.createElement("span");
+    msgBody.innerHTML = message;
 
     // Construct message
     msgElem.appendChild(unameElem);
