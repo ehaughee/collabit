@@ -147,7 +147,7 @@ io.of('/chat').on('connection', function (socket) {
             socket.emit('addusersuccess', room);
             
             if (rooms[room].language !== "") {
-              socket.emit('updatelang', rooms[room].language, username);  
+              socket.emit('updatelang', rooms[room].language, "SERVER");  
             }
             
             socket.broadcast.to(socket.room).emit('updatechatserver', username + ' has connected');
