@@ -1,6 +1,8 @@
 {
     "files": [
         "app.js",
+        "public/javascripts/main.js",
+        "public/javascripts/util.js",
         "typings/tsd.d.ts"
     ]
 }

@@ -1,16 +1,18 @@
 var usernames = [];
 
 $(function() {
+  // Dependencies
+  var util = ace.require("util");
+  
   // Cache element selectors
   // =========================================================
-  $chat = $("#chat");
-  $editor = $("#editor");
-  $img_load = $("#img-load").remove();
-  $btn_submit = $("#btn_submit");
-  $messages = $("#messages");
-  $overlay = $("#overlay");
-  $selectMode = $("select#mode");
-  $selectTheme = $("select#theme");
+  var $chat = $("#chat");
+  var $img_load = $("#img-load").remove();
+  var $btn_submit = $("#btn_submit");
+  var $messages = $("#messages");
+  var $overlay = $("#overlay");
+  var $selectMode = $("select#mode");
+  var $selectTheme = $("select#theme");
 
   blockui($img_load);
 
@@ -44,7 +46,7 @@ $(function() {
     blockui($overlay);
 
     $btn_submit.click(function () {
-      var name = validate_name($("#input_uname").val().trim());
+      var name = util.validate_name($("#input_uname").val().trim());
 
       if (name !== false) {
         socket.emit("adduser", name, document.URL.substr(-6));
@@ -77,13 +79,13 @@ $(function() {
   // [SOCKET] UPDATE CHAT
   socket.on("updatechat", function(username, message) {
     console.log("SOCKET: 'updatechat' emission detected.");
-    write_chat_message(username, tokenize(message));
+    write_chat_message(username, util.tokenize(message));
   });
 
   // [SOCKET] UPDATE CHAT SERVER
   socket.on("updatechatserver", function(message) {
     console.log("SOCKET: 'updatechatserver' emission detected.");
-    write_server_chat_message(tokenize(message));
+    write_server_chat_message(util.tokenize(message));
   });
 
   // [SOCKET] UPDATE USERS
@@ -226,38 +228,6 @@ $(function() {
       console.log("SOCKET: Send chat command detected.  Emitting 'sendchat'");
       socket.emit('sendchat', message);
     }
-  }
-
-  function validate_name(name) {
-
-    if (typeof name !== "undefined"
-        && name !== ""
-        && name !== null
-        && !name.match(/server/i)
-        && usernames.indexOf(name) === -1) {
-
-      return name;
-    }
-    else {
-      return false;
-    }
-  }
-
-  function tokenize(message) {
-    // Links
-    var pat_link = /(((https?|ftp):\/\/)\S+\.\S{2,})/ig;
-    var rep_link = '<a href="$1" target="_blank">$1</a>';
-    message = message.replace(pat_link, rep_link);
-
-    // Line links
-    // TODO: This will cause unwanted behavior if an
-    //       existing link has something that matches
-    //       the pattern in pat_linelink below.
-    var pat_linelink = /(^|\s)(#\d+)(\s|$)/im;
-    var rep_linelink = '$1<a href="#" class="linelink" data-line="$2">$2</a>$3';
-    message = message.replace(pat_linelink, rep_linelink);
-
-    return message;
   }
 
   function blockui(content) {
