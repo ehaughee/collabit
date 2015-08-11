@@ -17,6 +17,7 @@ var express = require('express')
   , arrayUtil = require('./util/arrayUtil')(console);
 
 // Globals
+var Room = function() { return { usernames: [], language: "" }; };
 var app = express();
 var rooms = {};
 
@@ -67,7 +68,7 @@ app.get('/', function (req, res) {
     room = makeid();
   } while (typeof rooms[room] !== "undefined");
 
-  rooms[room] = { usernames: [] };
+  rooms[room] = Room();
 
   res.redirect("/" + room);
 });
@@ -76,7 +77,7 @@ app.get('/:room([A-Za-z0-9]{6})', function (req, res) {
   var room = sanitizer.escape(req.params.room);
 
   if (typeof rooms[room] === "undefined") {
-    rooms[room] = { usernames: [] };
+    rooms[room] = Room();
   }
 
   res.render('session', { title: 'Collabit', room: room });
@@ -144,6 +145,11 @@ io.of('/chat').on('connection', function (socket) {
 
             socket.emit('updatechatserver', 'you have connected to room ' + socket.room);
             socket.emit('addusersuccess', room);
+            
+            if (rooms[room].language !== "") {
+              socket.emit('updatelang', rooms[room].language, "SERVER");  
+            }
+            
             socket.broadcast.to(socket.room).emit('updatechatserver', username + ' has connected');
             io.of('/chat').emit('updateusers', rooms[room].usernames);
           }
@@ -154,6 +160,8 @@ io.of('/chat').on('connection', function (socket) {
 
   socket.on('changelang', function (lang) {
     lang = sanitizer.escape(lang);
+    
+    rooms[socket.room].language = lang;
 
     // TODO: Do some validation on the lang here
     io.of('/chat').in(socket.room).emit('updatelang', lang, socket.username);
