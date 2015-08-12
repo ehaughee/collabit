@@ -10,7 +10,7 @@ describe('util tokenize', function () {
         var actual = util.tokenize(message);
         
         // Assert
-        expect(message).toEqual(expected);
+        expect(actual).toEqual(expected);
     });
     
     it('should return an anchor tag for "#1"', function () {
@@ -22,6 +22,6 @@ describe('util tokenize', function () {
        var actual = util.tokenize(message);
        
        // Assert
-       expect(message).toEqual(expected);
+       expect(actual).toEqual(expected);
     });
 });
