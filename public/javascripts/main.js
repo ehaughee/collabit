@@ -3,15 +3,14 @@ var usernames = [];
 $(function() {
   // Cache element selectors
   // =========================================================
-  $chat = $("#chat");
-  $editor = $("#editor");
-  $img_load = $("#img-load").remove();
-  $btn_submit = $("#btn_submit");
-  $messages = $("#messages");
-  $overlay = $("#overlay");
-  $selectMode = $("select#mode");
-  $selectTheme = $("select#theme");
-
+  var $chat = $("#chat")
+     , $img_load = $("#img-load").remove()
+     , $btn_submit = $("#btn_submit")
+     , $messages = $("#messages")
+     , $overlay = $("#overlay")
+     , $selectMode = $("select#mode")
+     , $selectTheme = $("select#theme");
+  
   blockui($img_load);
 
   // ACE Editor
@@ -196,7 +195,7 @@ $(function() {
     // Build message container
     var msgElem = document.createElement('div');
     msgElem.classList.add('message');
-    
+
     if (fServer) {
       msgElem.classList.add('server');
     }
@@ -206,13 +205,13 @@ $(function() {
     unameElem.textContent = username + ": ";
 
     // Build message body
-    var msgBody = document.createTextNode(message);
+    var msgBody = document.createTextNode(_.unescape(message));
 
     // Construct message
     msgElem.appendChild(unameElem);
     msgElem.appendChild(msgBody);
     $messages.append(msgElem);
-    
+
     // Scroll to the bottom of the messages container
     $messages[0].scrollTop = $messages[0].scrollHeight;
   }
