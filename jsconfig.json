@@ -1,6 +1,13 @@
 {
     "files": [
         "app.js",
+<<<<<<< Updated upstream
         "typings/tsd.d.ts"
+=======
+        "public/javascripts/main.js",
+        "public/javascripts/util.js",
+        "typings/tsd.d.ts",
+        "spec/*/*.js"
+>>>>>>> Stashed changes
     ]
 }

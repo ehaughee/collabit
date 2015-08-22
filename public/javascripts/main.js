@@ -10,7 +10,7 @@ $(function() {
      , $overlay = $("#overlay")
      , $selectMode = $("select#mode")
      , $selectTheme = $("select#theme");
-  
+
   blockui($img_load);
 
   // ACE Editor
@@ -205,7 +205,8 @@ $(function() {
     unameElem.textContent = username + ": ";
 
     // Build message body
-    var msgBody = document.createTextNode(_.unescape(message));
+    var msgBody = document.createElement("span");
+    msgBody.innerHTML = _.unescape(message);
 
     // Construct message
     msgElem.appendChild(unameElem);
@@ -243,7 +244,7 @@ $(function() {
 
   function tokenize(message) {
     // Links
-    var pat_link = /((((http(s)?|ftp):\/\/)|www\.)\S+\.\S{2,})/ig;
+    var pat_link = /(((https?|ftp):\/\/)\S+\.\S{2,})/ig;
     var rep_link = '<a href="$1" target="_blank">$1</a>';
     message = message.replace(pat_link, rep_link);
 
